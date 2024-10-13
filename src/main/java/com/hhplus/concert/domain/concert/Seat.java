@@ -22,6 +22,9 @@ public class Seat {
     @Description("가격")
     private Integer price;
 
+    @Description("좌석 상태")
+    private String status;
+
     @ManyToOne
     @JoinColumn(name = "performance_id")
     private Performance performance;

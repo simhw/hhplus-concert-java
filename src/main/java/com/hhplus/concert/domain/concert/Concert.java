@@ -25,8 +25,6 @@ public class Concert {
 
     private LocalDateTime deletedAt;
 
-
     @OneToMany(mappedBy = "concert")
     private List<Performance> performances = new ArrayList<>();
-
 }

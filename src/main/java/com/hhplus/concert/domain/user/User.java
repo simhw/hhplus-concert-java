@@ -22,6 +22,13 @@ public class User {
     private String email;
 
     @OneToMany(mappedBy = "user")
-    private List<Reservation> reservations  = new ArrayList<>();
+    private List<Reservation> reservations = new ArrayList<>();
 
+    protected User() {
+    }
+
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 }
