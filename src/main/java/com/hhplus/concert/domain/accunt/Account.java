@@ -1,31 +1,22 @@
 package com.hhplus.concert.domain.accunt;
 
+import com.hhplus.concert.domain.BaseTimeEntity;
 import com.hhplus.concert.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 
 import static jakarta.persistence.GenerationType.AUTO;
 
 @Getter
 @Entity
 @Table(name = "account")
-public class Account {
+public class Account extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = AUTO)
     @Column(name = "account_id")
     private Long id;
 
     private Long amount;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -39,10 +30,23 @@ public class Account {
         this.user = user;
     }
 
+    /**
+     * 천원 이상 충전 시 잔액을 증액한다.
+     */
     public void charge(Integer amount) {
         if (amount < 1000) {
             throw new NotValidAmountException();
         }
         this.amount += amount;
+    }
+
+    /**
+     * 계좌 이하의 금액 사용 시 잔액을 감액한다.
+     */
+    public void use(Integer amount) {
+        if (this.amount < amount) {
+            throw new NotEnoughAccountAmount();
+        }
+        this.amount -= amount;
     }
 }

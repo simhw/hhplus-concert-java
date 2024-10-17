@@ -13,7 +13,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     private final AccountJpaRepository accountJpaRepository;
 
     @Override
-    public Account findByUser(User user) {
+    public Account getAccount(User user) {
         return accountJpaRepository.findByUser(user).orElse(null);
     }
 }

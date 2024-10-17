@@ -1,6 +1,6 @@
 package com.hhplus.concert.interfaces.account;
 
-import com.hhplus.concert.application.AccountFacadeService;
+import com.hhplus.concert.application.AccountFacade;
 import com.hhplus.concert.domain.accunt.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AccountController {
 
-    private final AccountFacadeService accountFacadeService;
+    private final AccountFacade accountFacadeService;
 
     /**
      * 잔액 조회

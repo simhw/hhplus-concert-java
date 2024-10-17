@@ -12,8 +12,8 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
 
-    public Account get(User user) {
-        Account account = accountRepository.findByUser(user);
+    public Account getAccount(User user) {
+        Account account = accountRepository.getAccount(user);
 
         if (account == null) {
             throw new NoAccountException();
@@ -23,8 +23,16 @@ public class AccountService {
 
     @Transactional
     public Account charge(User user, Integer amount) {
-        Account account = get(user);
+        Account account = getAccount(user);
         account.charge(amount);
+
+        return account;
+    }
+
+    @Transactional
+    public Account use(User user, Integer amount) {
+        Account account = getAccount(user);
+        account.use(amount);
 
         return account;
     }
