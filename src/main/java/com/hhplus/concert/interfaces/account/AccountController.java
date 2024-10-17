@@ -2,11 +2,12 @@ package com.hhplus.concert.interfaces.account;
 
 import com.hhplus.concert.application.AccountFacade;
 import com.hhplus.concert.domain.account.Account;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
+@Tag(name = "Account", description = "계좌 API")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor

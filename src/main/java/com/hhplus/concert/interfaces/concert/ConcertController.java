@@ -1,5 +1,6 @@
 package com.hhplus.concert.interfaces.concert;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Tag(name = "Concert", description = "콘서트 API")
 @RestController
 @RequestMapping("/api/concerts")
 @RequiredArgsConstructor
