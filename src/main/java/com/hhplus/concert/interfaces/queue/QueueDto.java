@@ -15,7 +15,7 @@ public class QueueDto {
     @Data
     @AllArgsConstructor
     public static class QueueResponse {
-        private String code;
+        private String token;
     }
 
     @Data
@@ -24,6 +24,7 @@ public class QueueDto {
     public static class QueueStatusResponse {
         private String code;
         private String status;
-        private Integer number;
+        private Long waitingNumber;
+        private Long waitingExpectedWaiting;
     }
 }

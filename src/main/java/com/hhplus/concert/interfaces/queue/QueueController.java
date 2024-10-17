@@ -20,7 +20,7 @@ public class QueueController {
      */
     @GetMapping("/status")
     public ResponseEntity<QueueDto.QueueStatusResponse> status(@RequestHeader("Queue-Code") String code) {
-        QueueDto.QueueStatusResponse result = new QueueDto.QueueStatusResponse("QUEUE_CODE", "WAIT", 10);
+        QueueDto.QueueStatusResponse result = new QueueDto.QueueStatusResponse("QUEUE_CODE", "WAIT", 1L, 1L);
         return ResponseEntity.ok(result);
     }
 }
