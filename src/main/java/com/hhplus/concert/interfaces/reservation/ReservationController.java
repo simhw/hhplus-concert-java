@@ -1,11 +1,14 @@
 package com.hhplus.concert.interfaces.reservation;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Reservation", description = "예약 API")
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/reservations")
 public class ReservationController {
 
     /**
@@ -13,8 +16,8 @@ public class ReservationController {
      */
     @PostMapping("")
     public ResponseEntity<ReservationDto.ReservationResponse> reserve(
-            @RequestHeader("Queue-Code") String code,
-            ReservationDto.ReservationResponse request
+            @RequestHeader("Queue-Token") String token,
+            @RequestBody ReservationDto.ReservationRequest request
     ) {
         ReservationDto.ReservationResponse result = ReservationDto.ReservationResponse.builder()
                 .id(1L)
@@ -23,5 +26,4 @@ public class ReservationController {
 
         return ResponseEntity.ok(result);
     }
-
 }

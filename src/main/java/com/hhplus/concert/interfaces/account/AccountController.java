@@ -1,31 +1,44 @@
 package com.hhplus.concert.interfaces.account;
 
+import com.hhplus.concert.application.AccountFacade;
+import com.hhplus.concert.domain.account.Account;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController()
-@RequestMapping("/api/accounts")
+@Tag(name = "Account", description = "계좌 API")
+@RestController
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class AccountController {
+
+    private final AccountFacade accountFacadeService;
 
     /**
      * 잔액 조회
      */
-    @GetMapping("/users/{userId}")
+    @GetMapping("/{userId}/account")
     public ResponseEntity<AccountDto.AccountResponse> account(@PathVariable Long userId) {
+        Account account = accountFacadeService.account(userId);
         return ResponseEntity.ok(AccountDto.AccountResponse.builder()
-                .userId(userId)
-                .amount(1000000)
+                .amount(account.getAmount())
                 .build());
     }
 
     /**
      * 잔액 충전
      */
-    @PutMapping("/users/{userId}")
-    public ResponseEntity<AccountDto.AccountResponse> charge(@RequestBody AccountDto.AccountRequest request) {
-        return ResponseEntity.ok(AccountDto.AccountResponse.builder()
-                .userId(request.getUserId())
-                .amount(1000000 + request.getAmount())
-                .build());
+    @PutMapping("/{userId}/account")
+    public ResponseEntity<AccountDto.AccountResponse> charge(
+            @PathVariable Long userId,
+            @RequestBody AccountDto.AccountRequest request
+    ) {
+        Account charged = accountFacadeService.charge(userId, request.getAmount());
+        AccountDto.AccountResponse result = AccountDto.AccountResponse.builder()
+                .amount(charged.getAmount())
+                .updatedAt(charged.getUpdatedAt())
+                .build();
+        return ResponseEntity.ok(result);
     }
 }

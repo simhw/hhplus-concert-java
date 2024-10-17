@@ -3,6 +3,8 @@ package com.hhplus.concert.interfaces.account;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class AccountDto {
 
@@ -16,7 +18,7 @@ public class AccountDto {
     @Data
     @Builder
     public static class AccountResponse {
-        private Long userId;
-        private Integer amount;
+        private Long amount;
+        private LocalDateTime updatedAt;
     }
 }

@@ -9,6 +9,7 @@ public class ReservationDto {
     @Builder
     public static class ReservationRequest {
         private Long userId;
+        private Long concertId;
         private Long performanceId;
         private Long seatId;
     }

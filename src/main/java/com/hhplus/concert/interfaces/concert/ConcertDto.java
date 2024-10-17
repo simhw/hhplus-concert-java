@@ -1,20 +1,13 @@
 package com.hhplus.concert.interfaces.concert;
+
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class ConcertDto {
-
-    @Data
-    public static class ConcertRequest {
-        private Long id;
-    }
-
     @Data
     @Builder
     public static class ConcertResponse {
@@ -29,16 +22,15 @@ public class ConcertDto {
         private LocalDate date;
         private LocalDateTime startAt;
         private LocalDateTime endAt;
-        private List<SeatResponse> availableSeats = new ArrayList<>();
-        private List<SeatResponse> unavailableSeats = new ArrayList<>();
     }
 
     @Data
     @Builder
     public static class SeatResponse {
         private Long id;
-        private String grade;
         private Integer no;
+        private String grade;
         private Integer price;
+        private String status;
     }
 }
