@@ -61,6 +61,6 @@ public class Queue extends BaseTimeEntity {
 
     public boolean isExpired(int expiredTimeSeconds) {
         return status.equals(QueueStatus.EXPIRED)
-                || (enteredAt != null && LocalDateTime.now().isBefore(enteredAt.plusSeconds(expiredTimeSeconds)));
+                || (enteredAt != null && LocalDateTime.now().isAfter(enteredAt.plusSeconds(expiredTimeSeconds)));
     }
 }

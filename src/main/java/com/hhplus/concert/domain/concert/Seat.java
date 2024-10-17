@@ -34,13 +34,24 @@ public class Seat {
     protected Seat () {
     }
 
+    public Seat(String grade, Integer no, Integer price, SeatStatus status) {
+        this.grade = grade;
+        this.no = no;
+        this.price = price;
+        this.status = status;
+    }
+
     public void verifyIsAvailable() {
         if (status != SeatStatus.AVAILABLE) {
             throw new NotAvailableSeatException();
         }
     }
 
-    public void releaseSeat() {
+    public void release() {
         this.status = SeatStatus.AVAILABLE;
+    }
+
+    public void reserve() {
+        this.status = SeatStatus.RESERVED;
     }
 }
