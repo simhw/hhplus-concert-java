@@ -44,7 +44,7 @@ public class ReservationService {
 
         expires.forEach(reservation -> {
             Seat seat = reservation.getSeat();
-            seat.releaseSeat();
+            seat.release();
 
             reservation.paymentExpired();
         });

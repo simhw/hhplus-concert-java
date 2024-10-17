@@ -44,7 +44,7 @@ public class Performance extends BaseTimeEntity {
         this.date = date;
         this.startAt = startAt;
         this.endAt = endAt;
-        this.seats = seats;
+        this.seats.addAll(seats);
     }
 
     public void verifyIsNotExpired(LocalDateTime now) {

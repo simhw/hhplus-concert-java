@@ -83,7 +83,6 @@ public class ConcertService {
                 .filter(v -> v.getId().equals(seatId))
                 .findFirst()
                 .orElseThrow(NoSeatException::new);
-
         seat.verifyIsAvailable();
         return seat;
     }
