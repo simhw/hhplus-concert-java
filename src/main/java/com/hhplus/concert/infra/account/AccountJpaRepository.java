@@ -1,7 +1,7 @@
 package com.hhplus.concert.infra.account;
 
 
-import com.hhplus.concert.domain.accunt.Account;
+import com.hhplus.concert.domain.account.Account;
 import com.hhplus.concert.domain.user.User;
 import org.springframework.data.repository.CrudRepository;
 

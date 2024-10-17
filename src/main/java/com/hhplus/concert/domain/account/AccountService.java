@@ -1,4 +1,4 @@
-package com.hhplus.concert.domain.accunt;
+package com.hhplus.concert.domain.account;
 
 import com.hhplus.concert.domain.user.User;
 import lombok.RequiredArgsConstructor;

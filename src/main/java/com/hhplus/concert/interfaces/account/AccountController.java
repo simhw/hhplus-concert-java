@@ -1,7 +1,7 @@
 package com.hhplus.concert.interfaces.account;
 
 import com.hhplus.concert.application.AccountFacade;
-import com.hhplus.concert.domain.accunt.Account;
+import com.hhplus.concert.domain.account.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
