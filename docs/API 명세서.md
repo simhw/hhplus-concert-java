@@ -31,7 +31,7 @@
 
 ```json
 {
-  "code": "QUEUE_CODE"
+  "code": "TOKEN"
 }
 ```
 
@@ -49,16 +49,16 @@
 
 ### Request Headers
 
-| 헤더 이름        | 값                  | 설명                      |
-|--------------|--------------------|-------------------------|
-| `Queue-Code` | `QUEUE_CODE`       | API 접근을 위한 대기열 상태 인증 코드 |
-| `Accept`     | `application/json` | 서버로부터 JSON 형식의 응답 기대    |
+| 헤더 이름         | 값                  | 설명                      |
+|---------------|--------------------|-------------------------|
+| `Queue-Token` | `TOKEN`            | API 접근을 위한 대기열 상태 인증 코드 |
+| `Accept`      | `application/json` | 서버로부터 JSON 형식의 응답 기대    |
 
 ### Response Body
 
 ```json
 {
-  "code": "QUEUE_CODE",
+  "code": "TOKEN",
   "status": "WAIT",
   "number": 10
 }
@@ -80,9 +80,10 @@
 
 ### Request Headers
 
-| 헤더 이름    | 값                  | 설명                   |
-|----------|--------------------|----------------------|
-| `Accept` | `application/json` | 서버로부터 JSON 형식의 응답 기대 |
+| 헤더 이름         | 값                  | 설명                      |
+|---------------|--------------------|-------------------------|
+| `Queue-Token` | `TOKEN`            | API 접근을 위한 대기열 상태 인증 코드 |
+| `Accept`      | `application/json` | 서버로부터 JSON 형식의 응답 기대    |
 
 ### Response Body
 
@@ -102,16 +103,16 @@
 
 ---
 
-### [GET] /api/concerts/{concertId}
+### [GET] /api/concerts/{concertId}/performances
 
-- 콘서트의 공연 정보와 예약 가능한 좌석, 불가능한 좌석 목록을 조회힙니다.
+- 콘서트의 예약 가능한 공연 목록을 조회합니다.
 
 ### Request Headers
 
-| 헤더 이름        | 값                  | 설명                      |
-|--------------|--------------------|-------------------------|
-| `Queue-Code` | `QUEUE_CODE`       | API 접근을 위한 대기열 상태 인증 코드 |
-| `Accept`     | `application/json` | 서버로부터 JSON 형식의 응답 기대    |
+| 헤더 이름         | 값                  | 설명                      |
+|---------------|--------------------|-------------------------|
+| `Queue-Token` | `TOKEN`            | API 접근을 위한 대기열 상태 인증 코드 |
+| `Accept`      | `application/json` | 서버로부터 JSON 형식의 응답 기대    |
 
 ### Response Body
 
@@ -121,45 +122,57 @@
     "id": 1,
     "date": "2024-10-01",
     "startAt": "2024-10-01T10:00:00",
-    "endAt": "2024-10-01T12:00:00",
-    "availableSeats": [
-      {
-        "id": 1,
-        "grade": "VIP",
-        "no": 12,
-        "price": 100000
-      }
-    ],
-    "unavailableSeats": [
-      {
-        "id": 2,
-        "grade": "VIP",
-        "no": 13,
-        "price": 100000
-      }
-    ]
+    "endAt": "2024-10-01T12:00:00"
   }
 ]
 ```
 
-| 필드명                | 타입       | 설명                              |
-|--------------------|----------|---------------------------------|
-| `id`               | `Long`   | 콘서트 공연 아이디                      |
-| `date`             | `String` | 콘서트 날짜 (yyyy-MM-dd)             |
-| `startAt`          | `String` | 콘서트 시작 시간 (YYYY-MM-DDThh:mm:ss) |
-| `endAt`            | `String` | 콘서트 종료 시간 (YYYY-MM-DDThh:mm:ss) |
-| `endAt`            | `String` | 콘서트 종료 시간 (YYYY-MM-DDThh:mm:ss) |
-| `availableSeats`   | `Object` | 예약 가능 좌석                        |
-| `unavailableSeats` | `Object` | 예약 불가능 좌석                       |
+| 필드명       | 타입       | 설명                              |
+|-----------|----------|---------------------------------|
+| `id`      | `Long`   | 콘서트 공연 아이디                      |
+| `date`    | `String` | 콘서트 날짜 (yyyy-MM-dd)             |
+| `startAt` | `String` | 콘서트 시작 시간 (YYYY-MM-DDThh:mm:ss) |
+| `endAt`   | `String` | 콘서트 종료 시간 (YYYY-MM-DDThh:mm:ss) |
 
-| 필드명     | 타입        | 설명     |
-|---------|-----------|--------|
-| `id`    | `Long`    | 좌석 아이디 |
-| `grade` | `String`  | 좌석 등급  |
-| `no`    | `Integer` | 좌석 번호  |
-| `price` | `Integer` | 가격     |
+## 5. 콘서트 공연 좌석 조회 API
 
-## 5. 콘서트 예약  API
+---
+
+### [GET] /api/concerts/{concertId}/performances/{performanceId}/seats
+
+- 콘서트 공연의 좌석 목록을 조회합니다.
+- 좌석 상태가 'AVAILABLE'인 경우에만 예약 가능합니다.
+
+### Request Headers
+
+| 헤더 이름         | 값                  | 설명                      |
+|---------------|--------------------|-------------------------|
+| `Queue-Token` | `TOKEN`            | API 접근을 위한 대기열 상태 인증 코드 |
+| `Accept`      | `application/json` | 서버로부터 JSON 형식의 응답 기대    |
+
+### Response Body
+
+```json
+[
+  {
+    "id": 1,
+    "no": 1,
+    "grade": "VIP",
+    "price": 150000,
+    "status": "AVAILABLE"
+  }
+]
+```
+
+| 필드명      | 타입        | 설명                                               |
+|----------|-----------|--------------------------------------------------|
+| `id`     | `Long`    | 좌석 아이디                                           |
+| `no`     | `Integer` | 좌석 번호                                            |
+| `grade`  | `String`  | 좌석 등급                                            |
+| `price`  | `Integer` | 가격                                               |
+| `status` | `String`  | 상태(AVAILABLE: 예약 가능 ,RESERVED: 예약중, SOLD: 판매 완료) |
+
+## 6. 콘서트 예약  API
 
 ---
 
@@ -169,10 +182,10 @@
 
 ### Request Headers
 
-| 헤더 이름        | 값                  | 설명                      |
-|--------------|--------------------|-------------------------|
-| `Queue-Code` | `QUEUE_CODE`       | API 접근을 위한 대기열 상태 인증 코드 |
-| `Accept`     | `application/json` | 서버로부터 JSON 형식의 응답 기대    |
+| 헤더 이름         | 값                  | 설명                      |
+|---------------|--------------------|-------------------------|
+| `Queue-Token` | `TOKEN`            | API 접근을 위한 대기열 상태 인증 코드 |
+| `Accept`      | `application/json` | 서버로부터 JSON 형식의 응답 기대    |
 
 ### Request Body
 
@@ -204,7 +217,7 @@
 | `id`     | `Long`   | 예약 아이디 |
 | `status` | `String` | 예약 상태  |
 
-## 6. 예약 결제  API
+## 7. 예약 결제  API
 
 ---
 
@@ -214,10 +227,10 @@
 
 ### Request Headers
 
-| 헤더 이름        | 값                  | 설명                      |
-|--------------|--------------------|-------------------------|
-| `Queue-Code` | `QUEUE_CODE`       | API 접근을 위한 대기열 상태 인증 코드 |
-| `Accept`     | `application/json` | 서버로부터 JSON 형식의 응답 기대    |
+| 헤더 이름         | 값                  | 설명                      |
+|---------------|--------------------|-------------------------|
+| `Queue-Token` | `TOKEN`            | API 접근을 위한 대기열 상태 인증 코드 |
+| `Accept`      | `application/json` | 서버로부터 JSON 형식의 응답 기대    |
 
 ### Request Body
 
@@ -233,7 +246,7 @@
 | `userId`        | `Long` | 사용자 아이디 |
 | `reservationId` | `Long` | 예약 아이디  |
 
-## 7. 잔액 조회  API
+## 8. 잔액 조회  API
 
 ---
 
@@ -261,7 +274,7 @@
 | `userId` | `Long`    | 사용자 아이디 |
 | `amount` | `Integer` | 계좌 잔액   |
 
-## 8. 잔액 충전  API
+## 9. 잔액 충전  API
 
 ---
 
