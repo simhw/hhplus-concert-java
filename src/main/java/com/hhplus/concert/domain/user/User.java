@@ -17,6 +17,7 @@ import static jakarta.persistence.GenerationType.*;
 public class User {
     @Id
     @GeneratedValue(strategy = AUTO)
+    @Column(name = "user_id")
     private Long id;
 
     private String name;

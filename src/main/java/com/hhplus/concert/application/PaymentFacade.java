@@ -1,7 +1,7 @@
 package com.hhplus.concert.application;
 
 import com.hhplus.concert.domain.account.AccountService;
-import com.hhplus.concert.domain.payment.Payment;
+import com.hhplus.concert.domain.payment.PaymentInfo;
 import com.hhplus.concert.domain.payment.PaymentService;
 import com.hhplus.concert.domain.queue.QueueService;
 import com.hhplus.concert.domain.reservation.Reservation;
@@ -26,14 +26,14 @@ public class PaymentFacade {
      * 콘서트 예약 결제
      */
     @Transactional
-    public Payment pay(String token, Long userId, Long reservationId) {
+    public PaymentInfo pay(String token, Long userId, Long reservationId) {
         queueService.verifyIsActive(token);
         User user = userService.getUser(userId);
 
         Reservation reservation = reservationService.getReservation(reservationId);
-        accountService.use(user, reservation.getAmount());
-        reservation.paymentCompleted();
+        reservation.complete();
 
+        accountService.use(user, reservation.getAmount());
         return paymentService.pay(reservation);
     }
 }

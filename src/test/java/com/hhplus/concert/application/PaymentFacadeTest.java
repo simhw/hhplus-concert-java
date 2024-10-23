@@ -1,15 +1,16 @@
 package com.hhplus.concert.application;
 
 import com.hhplus.concert.domain.account.Account;
-import com.hhplus.concert.domain.account.NotEnoughAccountAmount;
 import com.hhplus.concert.domain.concert.Concert;
-import com.hhplus.concert.domain.concert.Performance;
+import com.hhplus.concert.domain.concert.ConcertPerformance;
 import com.hhplus.concert.domain.concert.Seat;
 import com.hhplus.concert.domain.concert.SeatStatus;
-import com.hhplus.concert.domain.payment.Payment;
+import com.hhplus.concert.domain.payment.PaymentInfo;
 import com.hhplus.concert.domain.queue.Queue;
 import com.hhplus.concert.domain.reservation.Reservation;
 import com.hhplus.concert.domain.reservation.ReservationStatus;
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import com.hhplus.concert.domain.user.User;
 import com.hhplus.concert.infra.account.AccountJpaRepository;
 import com.hhplus.concert.infra.concert.ConcertJpaRepository;
@@ -57,7 +58,7 @@ class PaymentFacadeTest {
     Seat seat1;
     Seat seat2;
     Seat seat3;
-    Performance performance;
+    ConcertPerformance performance;
     Concert concert;
 
     @BeforeEach
@@ -74,7 +75,7 @@ class PaymentFacadeTest {
         seat2 = new Seat("VIP", 2, 150000, SeatStatus.RESERVED);
         seat3 = new Seat("VIP", 3, 250000, SeatStatus.RESERVED);
 
-        performance = new Performance(LocalDate.now(), LocalDateTime.now().plusMinutes(100), LocalDateTime.now().plusMinutes(250), List.of(seat1, seat2));
+        performance = new ConcertPerformance(LocalDate.now(), LocalDateTime.now().plusMinutes(100), LocalDateTime.now().plusMinutes(250), List.of(seat1, seat2));
         concert = new Concert("concert", List.of(performance));
         concertJpaRepository.save(concert);
     }
@@ -87,12 +88,11 @@ class PaymentFacadeTest {
         reservationJpaRepository.save(reservation);
 
         // when
-        Payment payment = paymentFacade.pay(queue.getToken(), user.getId(), reservation.getId());
+        PaymentInfo payment = paymentFacade.pay(queue.getToken(), user.getId(), reservation.getId());
         assertThat(payment).isNotNull();
-        assertThat(payment.getReservation().getStatus()).isEqualTo(ReservationStatus.PAYMENT_COMPLETED);
     }
 
-    @DisplayName("잔액이 부족한 경우 결제가 불가능하다.")
+    @DisplayName("잔액이 부족한 경우 'NOT_ENOUGH_ACCOUNT_AMOUNT' 예외가 발생한다.")
     @Test
     void 잔액_부족_예약_결제() {
         // given
@@ -100,6 +100,8 @@ class PaymentFacadeTest {
         reservationJpaRepository.save(reservation);
 
         // when, then
-        Assertions.assertThrows(NotEnoughAccountAmount.class, () -> paymentFacade.pay(queue.getToken(), user.getId(), reservation.getId()));
+        CoreException exception = Assertions.assertThrows(CoreException.class,
+                () -> paymentFacade.pay(queue.getToken(), user.getId(), reservation.getId()));
+        assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_ENOUGH_ACCOUNT_AMOUNT);
     }
 }

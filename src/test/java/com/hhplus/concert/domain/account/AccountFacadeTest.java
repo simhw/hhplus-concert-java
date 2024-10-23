@@ -1,5 +1,7 @@
 package com.hhplus.concert.domain.account;
 
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import com.hhplus.concert.domain.user.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -32,14 +34,14 @@ class AccountFacadeTest {
         when(accountRepository.getAccount(user)).thenReturn(account);
 
         // when
-        Account charged = accountService.charge(user, amount);
+        AccountInfo charged = accountService.charge(user, amount);
 
         // then
         Assertions.assertThat(charged.getAmount()).isEqualTo(amount);
     }
 
     @Test
-    @DisplayName("1,000원 미만 금액 충전 시 계좌 금액이 증액되지 않는다.")
+    @DisplayName("1,000원 미만 금액 충전 시 'MINIMUM_CHARGE_AMOUNT' 예외가 발생한다.")
     void 최소_금액_미만_충전() {
         // given
         int amount = 900;
@@ -49,7 +51,8 @@ class AccountFacadeTest {
         when(accountRepository.getAccount(user)).thenReturn(account);
 
         // when
-        assertThrows(NotValidAmountException.class, () -> accountService.charge(user, amount));
+        CoreException exception = assertThrows(CoreException.class, () -> accountService.charge(user, amount));
+        Assertions.assertThat(exception.getErrorType()).isEqualTo(ErrorType.MINIMUM_CHARGE_AMOUNT);
     }
 
     @Test
@@ -63,7 +66,7 @@ class AccountFacadeTest {
         when(accountRepository.getAccount(user)).thenReturn(account);
 
         // when
-        Account charged = accountService.use(user, amount);
+        AccountInfo charged = accountService.use(user, amount);
 
         // then
         Assertions.assertThat(charged.getAmount()).isEqualTo(0);
@@ -80,6 +83,7 @@ class AccountFacadeTest {
         when(accountRepository.getAccount(user)).thenReturn(account);
 
         // when, then
-        assertThrows(NotEnoughAccountAmount.class, () -> accountService.use(user, amount));
+        CoreException exception = assertThrows(CoreException.class, () -> accountService.charge(user, amount));
+        Assertions.assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_ENOUGH_ACCOUNT_AMOUNT);
     }
 }

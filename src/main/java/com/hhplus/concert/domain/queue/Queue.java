@@ -1,6 +1,8 @@
 package com.hhplus.concert.domain.queue;
 
 import com.hhplus.concert.domain.BaseTimeEntity;
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import jakarta.persistence.*;
 import jdk.jfr.Description;
 import lombok.AllArgsConstructor;
@@ -51,7 +53,7 @@ public class Queue extends BaseTimeEntity {
 
     public void verifyIsActive(int expiredTimeSeconds) {
         if (isWaiting() || isExpired(expiredTimeSeconds)) {
-            throw new NotActivateQueueException();
+            throw new CoreException(ErrorType.NOT_ACTIVE_QUEUE, this.getToken());
         }
     }
 

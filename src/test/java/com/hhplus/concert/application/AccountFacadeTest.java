@@ -1,10 +1,10 @@
 package com.hhplus.concert.application;
 
 import com.hhplus.concert.domain.account.Account;
+import com.hhplus.concert.domain.account.AccountInfo;
 import com.hhplus.concert.domain.user.User;
 import com.hhplus.concert.infra.account.AccountJpaRepository;
 import com.hhplus.concert.infra.user.UserJpaRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ class AccountFacadeTest {
     @Autowired
     private AccountJpaRepository accountJpaRepository;
 
-    User user;
+    private User user;
 
     @BeforeEach
     void init() {
@@ -35,7 +35,7 @@ class AccountFacadeTest {
 
     @Test
     void 계좌_조회() {
-        Account account = accountFacade.account(user.getId());
+        AccountInfo account = accountFacade.getAccountInfo(user.getId());
         assertThat(account).isNotNull();
     }
 
@@ -44,7 +44,7 @@ class AccountFacadeTest {
         // given
         int amount = 10000;
         // when
-        Account account = accountFacade.charge(user.getId(), amount);
+        AccountInfo account = accountFacade.charge(user.getId(), amount);
 
         // then
         assertThat(account).isNotNull();

@@ -10,9 +10,12 @@ import org.springframework.stereotype.Service;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-
-    public Payment pay(Reservation reservation) {
+    /**
+     * 결제 정보 생성
+     * */
+    public PaymentInfo pay(Reservation reservation) {
         Payment payment = new Payment(reservation.getAmount(), reservation);
-        return paymentRepository.savePayment(payment);
+        Payment saved = paymentRepository.savePayment(payment);
+        return PaymentInfo.toPaymentInfo(saved);
     }
 }

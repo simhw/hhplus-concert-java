@@ -1,5 +1,7 @@
 package com.hhplus.concert.domain.account;
 
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import com.hhplus.concert.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,28 +14,31 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
 
-    public Account getAccount(User user) {
+    public AccountInfo getAccount(User user) {
         Account account = accountRepository.getAccount(user);
-
         if (account == null) {
-            throw new NoAccountException();
+            throw new CoreException(ErrorType.ACCOUNT_NOT_FOUND, user.getId());
         }
-        return account;
+        return AccountInfo.toAccountInfo(account);
     }
 
     @Transactional
-    public Account charge(User user, Integer amount) {
-        Account account = getAccount(user);
+    public AccountInfo charge(User user, Integer amount) {
+        Account account = accountRepository.getAccount(user);
+        if (account == null) {
+            throw new CoreException(ErrorType.ACCOUNT_NOT_FOUND, user.getId());
+        }
         account.charge(amount);
-
-        return account;
+        return AccountInfo.toAccountInfo(account);
     }
 
     @Transactional
-    public Account use(User user, Integer amount) {
-        Account account = getAccount(user);
+    public AccountInfo use(User user, Integer amount) {
+        Account account = accountRepository.getAccount(user);
+        if (account == null) {
+            throw new CoreException(ErrorType.ACCOUNT_NOT_FOUND, user.getId());
+        }
         account.use(amount);
-
-        return account;
+        return AccountInfo.toAccountInfo(account);
     }
 }

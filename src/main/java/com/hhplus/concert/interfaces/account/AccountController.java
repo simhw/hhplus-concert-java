@@ -1,7 +1,7 @@
 package com.hhplus.concert.interfaces.account;
 
 import com.hhplus.concert.application.AccountFacade;
-import com.hhplus.concert.domain.account.Account;
+import com.hhplus.concert.domain.account.AccountInfo;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,10 @@ public class AccountController {
      * 잔액 조회
      */
     @GetMapping("/{userId}/account")
-    public ResponseEntity<AccountDto.AccountResponse> account(@PathVariable Long userId) {
-        Account account = accountFacadeService.account(userId);
+    public ResponseEntity<AccountDto.AccountResponse> account(
+            @PathVariable Long userId
+    ) {
+        AccountInfo account = accountFacadeService.getAccountInfo(userId);
         return ResponseEntity.ok(AccountDto.AccountResponse.builder()
                 .amount(account.getAmount())
                 .build());
@@ -34,7 +36,7 @@ public class AccountController {
             @PathVariable Long userId,
             @RequestBody AccountDto.AccountRequest request
     ) {
-        Account charged = accountFacadeService.charge(userId, request.getAmount());
+        AccountInfo charged = accountFacadeService.charge(userId, request.getAmount());
         AccountDto.AccountResponse result = AccountDto.AccountResponse.builder()
                 .amount(charged.getAmount())
                 .updatedAt(charged.getUpdatedAt())

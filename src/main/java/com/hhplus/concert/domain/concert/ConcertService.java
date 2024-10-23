@@ -1,8 +1,7 @@
 package com.hhplus.concert.domain.concert;
 
-import com.hhplus.concert.domain.concert.exception.NoConcertException;
-import com.hhplus.concert.domain.concert.exception.NoPerformanceException;
-import com.hhplus.concert.domain.concert.exception.NoSeatException;
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,18 +19,21 @@ public class ConcertService {
      * 콘서트 목록 조회
      */
     @Transactional(readOnly = true)
-    public List<Concert> getActiveConcerts() {
-        return concertRepository.getConcerts();
+    public List<ConcertInfo> getConcertInfos() {
+        List<Concert> concerts = concertRepository.getConcerts();
+        return concerts.stream()
+                .map(ConcertInfo::toConcertInfo)
+                .toList();
     }
 
     /**
      * 콘서트 조회
      */
     @Transactional(readOnly = true)
-    public Concert getActiveConcert(Long concertId) {
+    public Concert getConcert(Long concertId) {
         Concert concert = concertRepository.getConcert(concertId);
         if (concert == null) {
-            throw new NoConcertException();
+            throw new CoreException(ErrorType.CONCERT_NOT_FOUND, concertId);
         }
         return concert;
     }
@@ -40,11 +42,12 @@ public class ConcertService {
      * 예약 가능한 공연 목록 조회
      */
     @Transactional(readOnly = true)
-    public List<Performance> getAvailablePerformances(Long concertId) {
-        Concert concert = getActiveConcert(concertId);
+    public List<ConcertPerformanceInfo> getAvailablePerformanceInfos(Long concertId) {
+        Concert concert = getConcert(concertId);
         LocalDateTime now = LocalDateTime.now();
         return concert.getPerformances().stream()
-                .filter(performance -> performance.isNotExpired(now))
+                .filter(v -> v.isNotExpired(now))
+                .map(ConcertPerformanceInfo::toConcertPerformanceInfo)
                 .toList();
     }
 
@@ -52,26 +55,27 @@ public class ConcertService {
      * 예약 가능한 공연 조회
      */
     @Transactional(readOnly = true)
-    public Performance getAvailablePerformance(Long concertId, Long performanceId) {
-        Concert concert = getActiveConcert(concertId);
+    public ConcertPerformance getAvailablePerformance(Long concertId, Long performanceId) {
+        Concert concert = getConcert(concertId);
         LocalDateTime now = LocalDateTime.now();
-
-        Performance performance = concert.getPerformances().stream()
+        ConcertPerformance performance = concert.getPerformances().stream()
                 .filter(v -> v.getId().equals(performanceId))
                 .findFirst()
-                .orElseThrow(NoPerformanceException::new);
-
+                .orElseThrow(() -> new CoreException(ErrorType.CONCERT_PERFORMANCE_NOT_FOUND, performanceId));
         performance.verifyIsNotExpired(now);
         return performance;
+
     }
 
     /**
      * 좌석 목록 조회
      */
     @Transactional(readOnly = true)
-    public List<Seat> getAllSeats(Long concertId, Long performanceId) {
-        Performance performance = getAvailablePerformance(concertId, performanceId);
-        return performance.getSeats();
+    public List<SeatInfo> getSeatInfos(Long concertId, Long performanceId) {
+        ConcertPerformance performance = getAvailablePerformance(concertId, performanceId);
+        return performance.getSeats().stream()
+                .map(SeatInfo::toSeatInfo)
+                .toList();
     }
 
     /**
@@ -79,10 +83,11 @@ public class ConcertService {
      */
     @Transactional(readOnly = true)
     public Seat getAvailableSeat(Long concertId, Long performanceId, Long seatId) {
-        Seat seat = getAllSeats(concertId, performanceId).stream()
+        ConcertPerformance performance = getAvailablePerformance(concertId, performanceId);
+        Seat seat = performance.getSeats().stream()
                 .filter(v -> v.getId().equals(seatId))
                 .findFirst()
-                .orElseThrow(NoSeatException::new);
+                .orElseThrow(() -> new CoreException(ErrorType.SEAT_NOT_FOUND, seatId));
         seat.verifyIsAvailable();
         return seat;
     }

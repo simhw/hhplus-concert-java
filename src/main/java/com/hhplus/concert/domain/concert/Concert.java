@@ -27,12 +27,12 @@ public class Concert extends BaseTimeEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "concert_id")
-    private List<Performance> performances = new ArrayList<>();
+    private List<ConcertPerformance> performances = new ArrayList<>();
 
     protected Concert() {
     }
 
-    public Concert(String title, List<Performance> performances) {
+    public Concert(String title, List<ConcertPerformance> performances) {
         this.title = title;
         this.performances = performances;
     }
