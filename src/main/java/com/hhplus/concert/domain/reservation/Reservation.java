@@ -15,7 +15,7 @@ import static jakarta.persistence.GenerationType.*;
 
 @Getter
 @Entity
-@Table
+@Table(name = "reservation")
 @AllArgsConstructor
 public class Reservation extends BaseTimeEntity {
     @Id
@@ -52,11 +52,11 @@ public class Reservation extends BaseTimeEntity {
         return getCreatedAt().isBefore(expireTime);
     }
 
-    public void paymentExpired() {
+    public void expire() {
         this.status = ReservationStatus.PAYMENT_EXPIRED;
     }
 
-    public void paymentCompleted() {
+    public void complete() {
         this.status = ReservationStatus.PAYMENT_COMPLETED;
     }
 }

@@ -1,5 +1,6 @@
 package com.hhplus.concert.interfaces.payment;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
@@ -12,6 +13,7 @@ public class PaymentDto {
     }
 
     @Data
+    @Builder
     public static class PaymentResponse {
         private Long id;
     }

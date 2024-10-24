@@ -1,5 +1,7 @@
 package com.hhplus.concert.domain.queue;
 
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,9 +46,8 @@ public class QueueService {
 
         Queue queue = queueRepository.getQueue(token);
         if (queue == null) {
-            throw new NoQueueException();
+            throw new CoreException(ErrorType.QUEUE_NOT_FOUND, token);
         }
-
         queue.verifyIsActive(ACTIVATE_EXPIRED_SECONDS);
     }
 
@@ -62,7 +63,7 @@ public class QueueService {
 
         Queue queue = queueRepository.getQueue(token);
         if (queue == null) {
-            throw new NoQueueException();
+            throw new CoreException(ErrorType.QUEUE_NOT_FOUND, token);
         }
 
         QueueInfo info = QueueInfo.toQueueInfo(queue);
@@ -105,10 +106,7 @@ public class QueueService {
     public void activate() {
         LocalDateTime now = LocalDateTime.now();
         Iterable<Queue> enqueue = queueRepository.getQueue(ACTIVATE_QUEUE_COUNT);
-
-        enqueue.forEach(queue -> {
-            queue.activate(now);
-        });
+        enqueue.forEach(queue -> queue.activate(now));
     }
 
     /**

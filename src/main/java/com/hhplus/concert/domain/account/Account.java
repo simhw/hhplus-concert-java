@@ -1,6 +1,8 @@
 package com.hhplus.concert.domain.account;
 
 import com.hhplus.concert.domain.BaseTimeEntity;
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import com.hhplus.concert.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -16,9 +18,12 @@ public class Account extends BaseTimeEntity {
     @Column(name = "account_id")
     private Long id;
 
+    @Version
+    private Long version;
+
     private Long amount;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -35,7 +40,7 @@ public class Account extends BaseTimeEntity {
      */
     public void charge(Integer amount) {
         if (amount < 1000) {
-            throw new NotValidAmountException();
+            throw new CoreException(ErrorType.MINIMUM_CHARGE_AMOUNT, amount);
         }
         this.amount += amount;
     }
@@ -45,7 +50,7 @@ public class Account extends BaseTimeEntity {
      */
     public void use(Integer amount) {
         if (this.amount < amount) {
-            throw new NotEnoughAccountAmount();
+            throw new CoreException(ErrorType.NOT_ENOUGH_ACCOUNT_AMOUNT, amount);
         }
         this.amount -= amount;
     }

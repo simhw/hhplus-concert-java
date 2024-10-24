@@ -1,5 +1,8 @@
 package com.hhplus.concert.interfaces.reservation;
 
+import com.hhplus.concert.application.ReservationFacade;
+import com.hhplus.concert.domain.reservation.ReservationCommand;
+import com.hhplus.concert.domain.reservation.ReservationInfo;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,19 +14,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/reservations")
 public class ReservationController {
 
+    private final ReservationFacade reservationFacade;
+
     /**
      * 공연 좌석 예약
      */
     @PostMapping("")
     public ResponseEntity<ReservationDto.ReservationResponse> reserve(
-            @RequestHeader("Queue-Token") String token,
             @RequestBody ReservationDto.ReservationRequest request
     ) {
+        ReservationInfo info = reservationFacade.reserve(ReservationCommand.toReservationCommand(request));
         ReservationDto.ReservationResponse result = ReservationDto.ReservationResponse.builder()
-                .id(1L)
-                .status("PAYMENT_WAIT")
+                .id(info.getId())
+                .status(info.getStatus())
                 .build();
-
         return ResponseEntity.ok(result);
     }
 }

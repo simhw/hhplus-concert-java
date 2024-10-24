@@ -14,13 +14,18 @@ import static jakarta.persistence.GenerationType.*;
 public class Payment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = AUTO)
+    @Column(name = "payment_id")
     private Long id;
+
+    @Version
+    private Long version;
 
     @Description("총 결제 금액")
     private Integer amount;
 
     @OneToOne
     private Reservation reservation;
+
     protected Payment() {
     }
 

@@ -1,6 +1,8 @@
 package com.hhplus.concert.domain.reservation;
 
 import com.hhplus.concert.domain.concert.Seat;
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import com.hhplus.concert.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,11 +21,14 @@ public class ReservationService {
     public Reservation getReservation(Long reservationId) {
         Reservation reservation = reservationRepository.getReservation(reservationId);
         if (reservation == null) {
-            throw new NoReservatioExcepiton();
+            throw new CoreException(ErrorType.RESERVATION_NOT_FOUND, reservation);
         }
         return reservation;
     }
 
+    /**
+     * 좌석 예약
+     */
     @Transactional
     public Reservation reserve(User user, Seat seat) {
         Reservation reservation = new Reservation(ReservationStatus.PAYMENT_WAITING, seat.getPrice(), user, seat);
@@ -45,8 +50,7 @@ public class ReservationService {
         expires.forEach(reservation -> {
             Seat seat = reservation.getSeat();
             seat.release();
-
-            reservation.paymentExpired();
+            reservation.expire();
         });
     }
 }

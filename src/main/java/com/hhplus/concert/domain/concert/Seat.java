@@ -1,6 +1,7 @@
 package com.hhplus.concert.domain.concert;
 
-import com.hhplus.concert.domain.concert.exception.NotAvailableSeatException;
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import jakarta.persistence.*;
 import jdk.jfr.Description;
 import lombok.AllArgsConstructor;
@@ -11,11 +12,15 @@ import static jakarta.persistence.GenerationType.*;
 @Getter
 @Entity
 @AllArgsConstructor
+@Table(name = "seat")
 public class Seat {
     @Id
     @GeneratedValue(strategy = AUTO)
     @Column(name = "seat_id")
     private Long id;
+
+    @Version
+    private Long version;
 
     @Description("등급")
     private String grade;
@@ -43,7 +48,7 @@ public class Seat {
 
     public void verifyIsAvailable() {
         if (status != SeatStatus.AVAILABLE) {
-            throw new NotAvailableSeatException();
+            throw new CoreException(ErrorType.DUPLICATED_RESERVATION, this.id);
         }
     }
 

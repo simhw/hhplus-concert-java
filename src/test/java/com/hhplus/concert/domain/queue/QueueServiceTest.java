@@ -1,5 +1,7 @@
 package com.hhplus.concert.domain.queue;
 
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +58,7 @@ class QueueServiceTest {
         verify(queueRepository, times(1)).addQueue(Mockito.any(Queue.class));
     }
 
-    @DisplayName("대기 상태인 경우 'NotActivateQueueException' 에러가 발생한다.")
+    @DisplayName("대기 상태인 경우 'NOT_ACTIVE_QUEUE' 예외가 발생한다.")
     @Test
     void 대기_상태_확인() {
         // given
@@ -65,19 +67,8 @@ class QueueServiceTest {
         when(queueRepository.getQueue(token)).thenReturn(queue);
 
         // when
-        Assertions.assertThrows(NotActivateQueueException.class, () -> queueService.verifyIsActive(token));
-    }
-
-    @DisplayName("만료 상태인 경우 'NotActivateQueueException' 에러가 발생한다.")
-    @Test
-    void 만료_상태_확인() {
-        // given
-        String token = UUID.randomUUID().toString();
-        Queue queue = new Queue(token);
-        when(queueRepository.getQueue(token)).thenReturn(queue);
-
-        // when
-        Assertions.assertThrows(NotActivateQueueException.class, () -> queueService.verifyIsActive(token));
+        CoreException exception = Assertions.assertThrows(CoreException.class, () -> queueService.verifyIsActive(token));
+        assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_ACTIVE_QUEUE);
     }
 
     @DisplayName("대기 상태 조회 시 대기 번호, 대기 예상 시간 등을 반환한다.")
