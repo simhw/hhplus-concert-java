@@ -45,7 +45,7 @@ class ConcertFacadeTest {
         }
 
         // when
-        List<ConcertInfo> concerts = concertFacade.getConcertInfos(queue.getToken());
+        List<ConcertInfo> concerts = concertFacade.getConcertInfos();
 
         // then
         assertThat(concerts.size()).isEqualTo(3);
@@ -65,7 +65,7 @@ class ConcertFacadeTest {
 
         // when, then
         CoreException exception = Assertions.assertThrows(CoreException.class,
-                () -> concertFacade.getConcertInfos(queue.getToken()));
+                () -> concertFacade.getConcertInfos());
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_ACTIVE_QUEUE);
     }
 
@@ -91,7 +91,7 @@ class ConcertFacadeTest {
         Concert concert = new Concert("concert", List.of(performance1, performance2));
         concertJpaRepository.save(concert);
 
-        List<ConcertPerformanceInfo> performances = concertFacade.getAvailablePerformanceInfos(queue.getToken(), concert.getId());
+        List<ConcertPerformanceInfo> performances = concertFacade.getAvailablePerformanceInfos(concert.getId());
         assertThat(performances.size()).isEqualTo(1);
     }
 
@@ -116,7 +116,7 @@ class ConcertFacadeTest {
 
         // when, then
         CoreException exception = Assertions.assertThrows(CoreException.class,
-                () -> concertFacade.getSeatInfos(queue.getToken(), concert.getId(), performance.getId()));
+                () -> concertFacade.getSeatInfos(concert.getId(), performance.getId()));
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.PERFORMANCE_EXPIRED);
     }
 }

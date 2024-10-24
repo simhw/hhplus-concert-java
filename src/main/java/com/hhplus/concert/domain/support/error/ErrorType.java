@@ -7,6 +7,7 @@ import org.springframework.boot.logging.LogLevel;
 @Getter
 @AllArgsConstructor
 public enum ErrorType {
+    // invalid
     // resource not found
     USER_NOT_FOUND(ErrorCode.RESOURCE_NOT_FOUND, "사용자를 찾을 수 없습니다.", LogLevel.WARN),
     ACCOUNT_NOT_FOUND(ErrorCode.RESOURCE_NOT_FOUND, "계좌를 찾을 수 없습니다.", LogLevel.WARN),

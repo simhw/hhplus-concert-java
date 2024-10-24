@@ -1,4 +1,4 @@
-package com.hhplus.concert.interfaces.support;
+package com.hhplus.concert.interfaces.support.error;
 
 import com.hhplus.concert.domain.support.error.CoreException;
 import lombok.extern.slf4j.Slf4j;
