@@ -4,14 +4,12 @@ import com.hhplus.concert.domain.concert.Concert;
 import com.hhplus.concert.domain.concert.ConcertPerformance;
 import com.hhplus.concert.domain.concert.Seat;
 import com.hhplus.concert.domain.concert.SeatStatus;
-import com.hhplus.concert.domain.queue.Queue;
 import com.hhplus.concert.domain.reservation.ReservationCommand;
 import com.hhplus.concert.domain.reservation.ReservationInfo;
 import com.hhplus.concert.domain.support.error.CoreException;
 import com.hhplus.concert.domain.support.error.ErrorType;
 import com.hhplus.concert.domain.user.User;
 import com.hhplus.concert.infra.concert.ConcertJpaRepository;
-import com.hhplus.concert.infra.queue.QueueJpaRepository;
 import com.hhplus.concert.infra.user.UserJpaRepository;
 
 import org.junit.jupiter.api.Assertions;
@@ -25,7 +23,6 @@ import org.springframework.test.annotation.Rollback;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -40,13 +37,9 @@ class ReservationFacadeTest {
     UserJpaRepository userJpaRepository;
 
     @Autowired
-    QueueJpaRepository queueJpaRepository;
-
-    @Autowired
     ConcertJpaRepository concertJpaRepository;
 
     User user;
-    Queue queue;
     Seat seat1, seat2, seat3, seat4;
     ConcertPerformance performance1, performance2;
     Concert concert;
@@ -55,10 +48,6 @@ class ReservationFacadeTest {
     void init() {
         user = new User("username", "email");
         userJpaRepository.save(user);
-
-        queue = new Queue(UUID.randomUUID().toString());
-        queue.activate(LocalDateTime.now());
-        queueJpaRepository.save(queue);
 
         seat1 = new Seat("BASIC", 1, 100000, SeatStatus.AVAILABLE);
         seat2 = new Seat("VIP", 2, 150000, SeatStatus.RESERVED);
@@ -87,7 +76,6 @@ class ReservationFacadeTest {
         // given
         ReservationCommand command = new ReservationCommand();
         command.setUserId(user.getId());
-        command.setToken(queue.getToken());
         command.setConcertId(concert.getId());
         command.setPerformanceId(performance1.getId());
         command.setSeatId(seat2.getId());
@@ -103,7 +91,6 @@ class ReservationFacadeTest {
         // given
         ReservationCommand command = new ReservationCommand();
         command.setUserId(user.getId());
-        command.setToken(queue.getToken());
         command.setConcertId(concert.getId());
         command.setPerformanceId(performance2.getId());
         command.setSeatId(seat3.getId());
@@ -121,7 +108,6 @@ class ReservationFacadeTest {
         // given
         ReservationCommand command = new ReservationCommand();
         command.setUserId(user.getId());
-        command.setToken(queue.getToken());
         command.setConcertId(concert.getId());
         command.setPerformanceId(performance2.getId());
         command.setSeatId(seat4.getId());

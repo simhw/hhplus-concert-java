@@ -26,7 +26,7 @@ class ReservationServiceTest {
     void 좌석_예약() {
         // given
         User user = new User(1L, "user", "email", null);
-        Seat seat = new Seat(1L, "VIP", 1, 100000, SeatStatus.RESERVED);
+        Seat seat = new Seat("VIP", 1, 100000, SeatStatus.RESERVED);
 
         Reservation reservation = new Reservation(ReservationStatus.PAYMENT_WAITING, seat.getPrice(), user, seat);
         when(reservationRepository.saveReservation(any(Reservation.class))).thenReturn(reservation);

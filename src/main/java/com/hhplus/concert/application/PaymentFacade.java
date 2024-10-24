@@ -3,7 +3,6 @@ package com.hhplus.concert.application;
 import com.hhplus.concert.domain.account.AccountService;
 import com.hhplus.concert.domain.payment.PaymentInfo;
 import com.hhplus.concert.domain.payment.PaymentService;
-import com.hhplus.concert.domain.queue.QueueService;
 import com.hhplus.concert.domain.reservation.Reservation;
 import com.hhplus.concert.domain.reservation.ReservationService;
 import com.hhplus.concert.domain.user.User;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class PaymentFacade {
 
-    private final QueueService queueService;
     private final UserService userService;
     private final AccountService accountService;
     private final ReservationService reservationService;
@@ -26,8 +24,7 @@ public class PaymentFacade {
      * 콘서트 예약 결제
      */
     @Transactional
-    public PaymentInfo pay(String token, Long userId, Long reservationId) {
-        queueService.verifyIsActive(token);
+    public PaymentInfo pay(Long userId, Long reservationId) {
         User user = userService.getUser(userId);
 
         Reservation reservation = reservationService.getReservation(reservationId);

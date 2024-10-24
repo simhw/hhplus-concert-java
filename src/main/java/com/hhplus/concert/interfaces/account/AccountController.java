@@ -37,10 +37,10 @@ public class AccountController {
             @RequestBody AccountDto.AccountRequest request
     ) {
         AccountInfo charged = accountFacadeService.charge(userId, request.getAmount());
-        AccountDto.AccountResponse result = AccountDto.AccountResponse.builder()
+        AccountDto.AccountResponse response = AccountDto.AccountResponse.builder()
                 .amount(charged.getAmount())
                 .updatedAt(charged.getUpdatedAt())
                 .build();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(response);
     }
 }

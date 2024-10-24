@@ -54,8 +54,8 @@ class ConcertServiceTest {
     @Test
     void 공연_좌석_목록_조회() {
         // given
-        Seat seat1 = new Seat(1L, "VIP", 1, 100000, SeatStatus.AVAILABLE);
-        Seat seat2 = new Seat(2L, "BASIC", 2, 80000, SeatStatus.AVAILABLE);
+        Seat seat1 = new Seat("VIP", 1, 100000, SeatStatus.AVAILABLE);
+        Seat seat2 = new Seat("BASIC", 2, 80000, SeatStatus.AVAILABLE);
         ConcertPerformance performance = new ConcertPerformance(1L, LocalDate.now(), LocalDateTime.now().plusMinutes(60), LocalDateTime.now().plusMinutes(180), List.of(seat1, seat2));
         Concert concert = new Concert(1L, "concert", null, List.of(performance));
         when(concertRepository.getConcert(1L)).thenReturn(concert);
@@ -71,8 +71,8 @@ class ConcertServiceTest {
     @Test
     void 예약_불가_공연_좌석_목록_조회() {
         // given
-        Seat seat1 = new Seat(1L, "VIP", 1, 100000, SeatStatus.AVAILABLE);
-        Seat seat2 = new Seat(2L, "BASIC", 2, 80000, SeatStatus.AVAILABLE);
+        Seat seat1 = new Seat("VIP", 1, 100000, SeatStatus.AVAILABLE);
+        Seat seat2 = new Seat("BASIC", 2, 80000, SeatStatus.AVAILABLE);
         ConcertPerformance performance = new ConcertPerformance(1L, LocalDate.now(), LocalDateTime.now().plusMinutes(30), LocalDateTime.now().plusMinutes(150), List.of(seat1, seat2));
         Concert concert = new Concert(1L, "concert", null, List.of(performance));
         when(concertRepository.getConcert(1L)).thenReturn(concert);
