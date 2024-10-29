@@ -23,13 +23,16 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class VerifyQueueInterceptor implements HandlerInterceptor {
 
+    private static final String QUEUE_TOKEN_HEADER = "Queue-Token";
+    private static final int ACTIVATE_EXPIRED_SECONDS = 300;   // 5분
+
     private final QueueRepository queueRepository;
     private final ObjectMapper objectMapper;
 
     // controller 호출 전 실행
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = request.getHeader("Queue-Token");
+        String token = request.getHeader(QUEUE_TOKEN_HEADER);
 
         try {
             if (!StringUtils.hasText(token)) {
@@ -40,7 +43,7 @@ public class VerifyQueueInterceptor implements HandlerInterceptor {
                 throw new CoreException(ErrorType.QUEUE_NOT_FOUND, token);
             }
 
-            queue.verifyIsActive(300);  // 5분
+            queue.verifyIsActive(ACTIVATE_EXPIRED_SECONDS);
         } catch (CoreException e) {
             writeResponseError(response, e);
             return false;
