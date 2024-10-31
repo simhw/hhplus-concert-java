@@ -16,4 +16,9 @@ public class AccountRepositoryImpl implements AccountRepository {
     public Account getAccount(User user) {
         return accountJpaRepository.findByUser(user).orElse(null);
     }
+
+    @Override
+    public Account getAccountForUpdate(User user) {
+        return accountJpaRepository.findAccountForUpdate(user).orElse(null);
+    }
 }

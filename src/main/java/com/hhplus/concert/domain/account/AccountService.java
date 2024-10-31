@@ -24,7 +24,7 @@ public class AccountService {
 
     @Transactional
     public AccountInfo charge(User user, Integer amount) {
-        Account account = accountRepository.getAccount(user);
+        Account account = accountRepository.getAccountForUpdate(user);
         if (account == null) {
             throw new CoreException(ErrorType.ACCOUNT_NOT_FOUND, user.getId());
         }
@@ -34,7 +34,7 @@ public class AccountService {
 
     @Transactional
     public AccountInfo use(User user, Integer amount) {
-        Account account = accountRepository.getAccount(user);
+        Account account = accountRepository.getAccountForUpdate(user);
         if (account == null) {
             throw new CoreException(ErrorType.ACCOUNT_NOT_FOUND, user.getId());
         }
