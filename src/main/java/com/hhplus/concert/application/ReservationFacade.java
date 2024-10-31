@@ -9,9 +9,11 @@ import com.hhplus.concert.domain.reservation.ReservationService;
 import com.hhplus.concert.domain.user.User;
 import com.hhplus.concert.domain.user.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ReservationFacade {
@@ -21,14 +23,13 @@ public class ReservationFacade {
     private final ReservationService reservationService;
 
     /**
-     * 콘서트 예약
+     * 좌석 예약
      */
     @Transactional
-    public ReservationInfo reserve(ReservationCommand command) {
+    public ReservationInfo placeReservation(ReservationCommand command) {
         User user = userService.getUser(command.getUserId());
-        Seat seat = concertService.getAvailableSeat(command.getConcertId(), command.getPerformanceId(), command.getSeatId());
-        seat.reserve();
-        Reservation reserve = reservationService.reserve(user, seat);
+        Seat seat = concertService.occupySeat(command.getConcertId(), command.getPerformanceId(), command.getSeatId());
+        Reservation reserve = reservationService.placeReservation(user, seat);
         return ReservationInfo.toReservationInfo(reserve);
     }
 }

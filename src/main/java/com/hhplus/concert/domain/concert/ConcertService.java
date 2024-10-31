@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -86,10 +85,11 @@ public class ConcertService {
     @Transactional
     public Seat occupySeat(Long concertId, Long performanceId, Long seatId) {
         ConcertPerformance performance = getAvailablePerformance(concertId, performanceId);
-        Seat seat = performance.getSeats().stream()
-                .filter(v -> Objects.equals(v.getId(), seatId))
-                .findFirst()
-                .orElseThrow(() -> new CoreException(ErrorType.SEAT_NOT_FOUND, seatId));
+        Seat seat = concertRepository.getSeatForUpdate(seatId);
+        if (seat == null || !performance.getSeats().contains(seat)) {
+            throw new CoreException(ErrorType.SEAT_NOT_FOUND, seatId);
+        }
+
         seat.occupy();
         return seat;
     }
