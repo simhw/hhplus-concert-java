@@ -23,6 +23,9 @@ public class Seat {
     @Column(name = "seat_id")
     private Long id;
 
+    @Version
+    private Long version;
+
     @Description("등급")
     private String grade;
 
@@ -66,5 +69,4 @@ public class Seat {
     public void release() {
         this.status = SeatStatus.AVAILABLE;
     }
-
 }
