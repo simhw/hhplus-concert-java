@@ -5,10 +5,14 @@ import com.hhplus.concert.domain.support.error.ErrorType;
 import jakarta.persistence.*;
 import jdk.jfr.Description;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
+import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 
+@Builder
 @Getter
 @Entity
 @AllArgsConstructor
@@ -36,7 +40,12 @@ public class Seat {
     @Enumerated(EnumType.STRING)
     private SeatStatus status;
 
-    protected Seat () {
+    @Setter
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "concert_performance_id")
+    private ConcertPerformance performance;
+
+    protected Seat() {
     }
 
     public Seat(String grade, Integer no, Integer price, SeatStatus status) {
@@ -47,16 +56,18 @@ public class Seat {
     }
 
     public void verifyIsAvailable() {
-        if (status != SeatStatus.AVAILABLE) {
+        if (!status.equals(SeatStatus.AVAILABLE)) {
             throw new CoreException(ErrorType.DUPLICATED_RESERVATION, this.id);
         }
+    }
+
+    public void occupy() {
+        verifyIsAvailable();
+        this.status = SeatStatus.RESERVED;
     }
 
     public void release() {
         this.status = SeatStatus.AVAILABLE;
     }
 
-    public void reserve() {
-        this.status = SeatStatus.RESERVED;
-    }
 }

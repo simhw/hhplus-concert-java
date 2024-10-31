@@ -6,7 +6,9 @@ import com.hhplus.concert.domain.support.error.ErrorType;
 import jakarta.persistence.*;
 import jdk.jfr.Description;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,6 +18,7 @@ import java.util.List;
 import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 
+@Builder
 @Getter
 @Entity
 @Table(name = "concert_performance")
@@ -35,8 +38,12 @@ public class ConcertPerformance extends BaseTimeEntity {
     @Description("종료 시간")
     private LocalDateTime endAt;
 
-    @OneToMany(fetch = LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "performance_id")
+    @Setter
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "concert_id")
+    private Concert concert;
+
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL)
     private List<Seat> seats = new ArrayList<>();
 
     protected ConcertPerformance() {
@@ -46,7 +53,17 @@ public class ConcertPerformance extends BaseTimeEntity {
         this.date = date;
         this.startAt = startAt;
         this.endAt = endAt;
+        setSeats(seats);
+    }
+
+    public void setSeats(List<Seat> seats) {
         this.seats = seats;
+        if (seats == null) {
+            return;
+        }
+        for (Seat seat : seats) {
+            seat.setPerformance(this);
+        }
     }
 
     public void verifyIsNotExpired(LocalDateTime now) {
