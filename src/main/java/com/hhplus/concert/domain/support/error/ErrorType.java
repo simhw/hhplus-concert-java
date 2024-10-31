@@ -19,6 +19,7 @@ public enum ErrorType {
 
     // business error
     PERFORMANCE_EXPIRED(ErrorCode.BUSINESS_ERROR, "예매가 불가능한 공연입니다.", LogLevel.INFO),
+    CONFLICT_RESERVATION(ErrorCode.BUSINESS_ERROR, "예약중 충돌이 발생했습니다. 다시 시도해주세요. ", LogLevel.INFO),
     DUPLICATED_RESERVATION(ErrorCode.BUSINESS_ERROR, "이미 예약된 좌석입니다.", LogLevel.INFO),
     MINIMUM_CHARGE_AMOUNT(ErrorCode.BUSINESS_ERROR, "1,000원 이상 충전이 가능합니다.", LogLevel.INFO),
     NOT_ENOUGH_ACCOUNT_AMOUNT(ErrorCode.BUSINESS_ERROR, "계좌 잔액이 부족합니다.", LogLevel.INFO),

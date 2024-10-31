@@ -1,11 +1,10 @@
 spring:
   application:
     name: concert-system
-
   datasource:
     driver-class-name: org.h2.Driver
-    #    url: jdbc:h2:mem:concert
-    url: jdbc:h2:tcp://localhost/~/workspace/h2/test
+    url: jdbc:h2:mem:concert
+#    url: jdbc:h2:tcp://localhost/~/workspace/h2/test
     username: sa
     password:
   h2:
@@ -13,13 +12,16 @@ spring:
       enabled: true
       path: /h2-console
   jpa:
-
     hibernate:
       ddl-auto: create-drop
     properties:
       hibernate:
         show_sql: ture
         format_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 logging:
   level:
@@ -35,6 +37,7 @@ springdoc:
     display-request-duration: true
     defaultModelsExpandDepth: 2
     defaultModelExpandDepth: 2
+
   api-docs:
     path: /api-docs
   show-actuator: true
