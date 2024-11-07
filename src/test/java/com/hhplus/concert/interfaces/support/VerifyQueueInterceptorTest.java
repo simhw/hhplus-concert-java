@@ -35,12 +35,9 @@ class VerifyQueueInterceptorTest {
     @BeforeEach
     public void init() throws CoreException {
         Queue mockQueue = Mockito.mock(Queue.class);
-        when(queueRepository.getQueue(VALID_TOKEN)).thenReturn(mockQueue);
-
-        Mockito.doNothing().when(mockQueue).verifyIsActive(300);
-
+        when(queueRepository.getActiveQueue(VALID_TOKEN)).thenReturn(mockQueue);
         doThrow(new CoreException(ErrorType.NOT_ACTIVE_QUEUE, INVALID_TOKEN))
-                .when(queueRepository).getQueue(INVALID_TOKEN);
+                .when(queueRepository).getActiveQueue(INVALID_TOKEN);
     }
 
     @Test

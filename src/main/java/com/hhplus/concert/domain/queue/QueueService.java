@@ -1,15 +1,13 @@
 package com.hhplus.concert.domain.queue;
 
-import com.hhplus.concert.domain.support.error.CoreException;
-import com.hhplus.concert.domain.support.error.ErrorType;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class QueueService {
@@ -22,96 +20,66 @@ public class QueueService {
 
     /**
      * 대기열 등록
-     * 이미 등록된 대기가 있는 경우 만료 상태로 변경한다.
+     * 이미 등록된 대기가 있는 경우 기존 대기 정보는 삭제한다.
      */
-    @Transactional
-    public Queue wait(String token) {
+    public Queue waitQueue(String token) {
         if (StringUtils.hasText(token)) {
-            Queue existed = queueRepository.getQueue(token);
-            existed.expire();
+            removeAlreadyWaitQueue(token);
         }
 
-        Queue queue = new Queue(UUID.randomUUID().toString());
-        return queueRepository.addQueue(queue);
+        Queue queue = new Queue();
+        queue.generateQueueToken();
+        queueRepository.saveWaitingQueue(queue);
+        return queue;
     }
 
-    /**
-     * 활성화 상태 체크
-     */
-    @Transactional(readOnly = true)
-    public void verifyIsActive(String token) {
-        if (!StringUtils.hasText(token)) {
-            throw new RuntimeException("queue token is null");
+    private void removeAlreadyWaitQueue(String token) {
+        long existed = queueRepository.getWaitingNumber(token);
+        if (existed > 0) {
+            queueRepository.removeWaitingQueue(token);
         }
-
-        Queue queue = queueRepository.getQueue(token);
-        if (queue == null) {
-            throw new CoreException(ErrorType.QUEUE_NOT_FOUND, token);
-        }
-        queue.verifyIsActive(ACTIVATE_EXPIRED_SECONDS);
     }
 
     /**
      * 대기 상태 조회
      * 대기 상태인 경우 대기 번호, 예상 대기 시간을 추가로 계산해 반환한다.
+     * 대기열에 토큰이 존재하지 않는 경우, 활성화열 진입으로 가정한다.
      */
-    @Transactional(readOnly = true)
     public QueueInfo getQueueInfo(String token) {
         if (!StringUtils.hasText(token)) {
-            throw new RuntimeException("token is null");
+            throw new IllegalArgumentException("invalid token");
+        }
+        Long rank = queueRepository.getWaitingNumber(token);
+
+        if (rank == null || rank <= 0) {
+            QueueInfo activeQueueInfo = QueueInfo.toQueueInfo("ACTIVE");
+            activeQueueInfo.setWaitingPosition(0L);
+            activeQueueInfo.setExpectedWaitTimeSeconds(0L);
+            return activeQueueInfo;
         }
 
-        Queue queue = queueRepository.getQueue(token);
-        if (queue == null) {
-            throw new CoreException(ErrorType.QUEUE_NOT_FOUND, token);
-        }
-
-        QueueInfo info = QueueInfo.toQueueInfo(queue);
-        if (queue.isWaiting()) {
-            Queue front = queueRepository.getFront();
-            info.setWaitingPosition(calWaitingNumber(queue, front));
-            info.setExpectedWaitTimeSeconds(calExpectedWaitTimeSeconds(queue, front));
-        }
-
-        return info;
+        QueueInfo waitingQueueInfo = QueueInfo.toQueueInfo("WAITING");
+        waitingQueueInfo.setWaitingPosition(rank);
+        waitingQueueInfo.setExpectedWaitTimeSeconds(calExpectedWaitTimeSeconds(rank));
+        return waitingQueueInfo;
     }
 
-    /**
-     * 대기 번호 계산
-     */
-    private Long calWaitingNumber(Queue queue, Queue front) {
-        if (queue.getId() > front.getId()) {
-            long pos = queue.getId() - front.getId();
-            return pos + 1;
-        }
-        return 1L;
-    }
-
-    /**
-     * 예상 대기 시간 계산
-     */
-    private Long calExpectedWaitTimeSeconds(Queue queue, Queue front) {
-        if (queue.getId() > front.getId()) {
-            long pos = queue.getId() - front.getId();
-            long turn = (long) Math.ceil(pos / (ACTIVATE_QUEUE_COUNT * 1.0));
-            return turn * ACTIVATE_QUEUE_SECONDS;
-        }
-        return (long) ACTIVATE_QUEUE_SECONDS;
+    private Long calExpectedWaitTimeSeconds(Long rank) {
+        long turn = (long) Math.ceil(rank / (ACTIVATE_QUEUE_COUNT * 1.0));
+        return turn * ACTIVATE_QUEUE_SECONDS;
     }
 
     /**
      * 작업 상태 전환
+     * waiting queue → active queue
      */
-    @Transactional
-    public void activate() {
-        LocalDateTime now = LocalDateTime.now();
-        Iterable<Queue> enqueue = queueRepository.getQueue(ACTIVATE_QUEUE_COUNT);
-        enqueue.forEach(queue -> queue.activate(now));
-    }
-
-    /**
-     * 일정 시간이 지난 경우 만료 처리
-     */
-    public void expire() {
+    public void activateWaitingQueue() {
+        List<Queue> topWaitingQueue = queueRepository.getTopNWaitingQueue(ACTIVATE_QUEUE_COUNT);
+        log.info("activate waiting queue count:{}", topWaitingQueue.size());
+        for (Queue queue : topWaitingQueue) {
+            log.info("activate waiting queue token:{}", queue.getToken());
+            queueRepository.saveActiveQueue(queue, ACTIVATE_QUEUE_SECONDS);
+            queueRepository.removeWaitingQueue(queue.getToken());
+        }
     }
 }

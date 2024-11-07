@@ -38,17 +38,18 @@ public class VerifyQueueInterceptor implements HandlerInterceptor {
             if (!StringUtils.hasText(token)) {
                 throw new IllegalAccessException();
             }
-            Queue queue = queueRepository.getQueue(token);
+            Queue queue = queueRepository.getActiveQueue(token);
+
             if (queue == null) {
                 throw new CoreException(ErrorType.QUEUE_NOT_FOUND, token);
             }
 
-            queue.verifyIsActive(ACTIVATE_EXPIRED_SECONDS);
+            return true;
+
         } catch (CoreException e) {
             writeResponseError(response, e);
             return false;
         }
-        return true;
     }
 
     // controller 예외 발생 시 실행되지 않음
