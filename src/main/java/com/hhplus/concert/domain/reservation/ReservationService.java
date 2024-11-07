@@ -30,7 +30,7 @@ public class ReservationService {
      * 좌석 예약
      */
     @Transactional
-    public Reservation reserve(User user, Seat seat) {
+    public Reservation placeReservation(User user, Seat seat) {
         Reservation reservation = new Reservation(ReservationStatus.PAYMENT_WAITING, seat.getPrice(), user, seat);
         return reservationRepository.saveReservation(reservation);
     }

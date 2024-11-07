@@ -35,6 +35,7 @@ public class ConcertService {
         if (concert == null) {
             throw new CoreException(ErrorType.CONCERT_NOT_FOUND, concertId);
         }
+        concert.verifyIsAvailable();
         return concert;
     }
 
@@ -53,18 +54,17 @@ public class ConcertService {
 
     /**
      * 예약 가능한 공연 조회
+     * 유효한 콘서트, 예약 가능한 공연을 조회합니다.
      */
     @Transactional(readOnly = true)
     public ConcertPerformance getAvailablePerformance(Long concertId, Long performanceId) {
-        Concert concert = getConcert(concertId);
-        LocalDateTime now = LocalDateTime.now();
-        ConcertPerformance performance = concert.getPerformances().stream()
-                .filter(v -> v.getId().equals(performanceId))
-                .findFirst()
-                .orElseThrow(() -> new CoreException(ErrorType.CONCERT_PERFORMANCE_NOT_FOUND, performanceId));
-        performance.verifyIsNotExpired(now);
+        ConcertPerformance performance = concertRepository.getPerformance(concertId, performanceId);
+        if (performance == null) {
+            throw new CoreException(ErrorType.CONCERT_PERFORMANCE_NOT_FOUND, performanceId);
+        }
+        performance.getConcert().verifyIsAvailable();
+        performance.verifyIsNotExpired(LocalDateTime.now());
         return performance;
-
     }
 
     /**
@@ -80,15 +80,16 @@ public class ConcertService {
 
     /**
      * 예약 가능한 좌석 조회
+     * 유효한 콘서트, 예약 가능한 공연, 좌석을 조회한 후 좌석의 상태를 'RESERVED'로 변경합니다.
      */
-    @Transactional(readOnly = true)
-    public Seat getAvailableSeat(Long concertId, Long performanceId, Long seatId) {
+    @Transactional
+    public Seat occupySeat(Long concertId, Long performanceId, Long seatId) {
         ConcertPerformance performance = getAvailablePerformance(concertId, performanceId);
         Seat seat = performance.getSeats().stream()
                 .filter(v -> v.getId().equals(seatId))
                 .findFirst()
                 .orElseThrow(() -> new CoreException(ErrorType.SEAT_NOT_FOUND, seatId));
-        seat.verifyIsAvailable();
+        seat.occupy();
         return seat;
     }
 }

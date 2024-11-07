@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.StopWatch;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -28,30 +29,35 @@ public class AccountConcurrencyTest {
     @Autowired
     private AccountJpaRepository accountJpaRepository;
 
-    private Long USER_ID;
+    User USER;
+    Account ACCOUNT;
 
     @BeforeEach
     void init() {
-        User user = new User("admin", "admin");
-        user = userJpaRepository.save(user);
-        USER_ID = user.getId();
-
-        Account account = new Account(10000L, user);
-        accountJpaRepository.save(account);
-
+        USER = new User("USER", "USER@EXAMPLE.COM");
+        userJpaRepository.save(USER);
+        ACCOUNT = new Account(0L, USER);
+        accountJpaRepository.save(ACCOUNT);
     }
-    @DisplayName("동시에 5번 충전 요청 시 1번만 성공한다.")
+
+    @DisplayName("동시에 1,000원을 5번 충전 요청 시 잔액은 5,000원이어야 한다.")
     @Test
-    void 계좌_충전 () throws InterruptedException {
-        ExecutorService es = Executors.newFixedThreadPool(5);
-        CountDownLatch countDownLatch = new CountDownLatch(5);
+    void 계좌_충전_비관적락() throws InterruptedException {
+        final int THREADS_COUNT = 5;
+        int AMOUNT = 1000;
+
+        ExecutorService es = Executors.newFixedThreadPool(THREADS_COUNT);
+        CountDownLatch countDownLatch = new CountDownLatch(THREADS_COUNT);
         AtomicInteger success = new AtomicInteger(0);
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         // when
-        for (long i = 1; i <= 5; i++) {
+        for (long i = 1; i <= THREADS_COUNT; i++) {
             es.submit(() -> {
                 try {
-                    accountFacade.charge(USER_ID, 10000);
+                    accountFacade.charge(USER.getId(), AMOUNT);
                     success.incrementAndGet();
 
                 } catch (Exception e) {
@@ -65,6 +71,13 @@ public class AccountConcurrencyTest {
         countDownLatch.await();
         es.shutdown();
 
-        Assertions.assertThat(success.get()).isEqualTo(1);
+        stopWatch.stop();
+        System.out.println("소요시간: " + stopWatch.getTotalTimeMillis() + "ms");
+        System.out.println(stopWatch.prettyPrint());
+
+        // then
+        Assertions.assertThat(success.get()).isEqualTo(THREADS_COUNT);
+        Account account = accountJpaRepository.findByUser(USER).get();
+        Assertions.assertThat(account.getAmount()).isEqualTo(THREADS_COUNT * AMOUNT);
     }
 }

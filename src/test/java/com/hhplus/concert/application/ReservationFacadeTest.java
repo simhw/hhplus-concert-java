@@ -81,7 +81,7 @@ class ReservationFacadeTest {
         command.setSeatId(seat2.getId());
 
         // when, then
-        CoreException exception = Assertions.assertThrows(CoreException.class, () -> reservationFacade.reserve(command));
+        CoreException exception = Assertions.assertThrows(CoreException.class, () -> reservationFacade.placeReservation(command));
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.PERFORMANCE_EXPIRED);
     }
 
@@ -96,7 +96,7 @@ class ReservationFacadeTest {
         command.setSeatId(seat3.getId());
 
         // when
-        ReservationInfo reserve = reservationFacade.reserve(command);
+        ReservationInfo reserve = reservationFacade.placeReservation(command);
 
         // then
         assertThat(reserve.getId()).isNotNull();
@@ -113,7 +113,7 @@ class ReservationFacadeTest {
         command.setSeatId(seat4.getId());
 
         // when, then
-        CoreException exception = Assertions.assertThrows(CoreException.class, () -> reservationFacade.reserve(command));
+        CoreException exception = Assertions.assertThrows(CoreException.class, () -> reservationFacade.placeReservation(command));
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.DUPLICATED_RESERVATION);
     }
 }

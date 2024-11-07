@@ -32,7 +32,7 @@ class ReservationServiceTest {
         when(reservationRepository.saveReservation(any(Reservation.class))).thenReturn(reservation);
 
         // when
-        Reservation reserved = reservationService.reserve(user, seat);
+        Reservation reserved = reservationService.placeReservation(user, seat);
 
         // then
         assertNotNull(reserved);
