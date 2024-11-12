@@ -13,6 +13,6 @@ public class QueueScheduler {
 
     @Scheduled(initialDelay = 60000, fixedDelay = 60000)
     public void activate() {
-        queueService.activateWaitingQueue();
+        queueService.moveWaitingQueueToken();
     }
 }

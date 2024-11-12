@@ -1,10 +1,9 @@
 package com.hhplus.concert.interfaces.queue;
 
-import com.hhplus.concert.domain.queue.Queue;
-import com.hhplus.concert.domain.queue.QueueInfo;
+import com.hhplus.concert.domain.queue.QueueTokenInfo;
 import com.hhplus.concert.domain.queue.QueueService;
+import com.hhplus.concert.domain.queue.Token;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +20,10 @@ public class QueueController {
      * 접속 대기 요청
      */
     @PostMapping("")
-    public ResponseEntity<QueueDto.QueueResponse> waiting(
-            @Nullable @RequestHeader("Queue-Token") String token
-    ) {
-        Queue queue = queueService.waitQueue(token);
-        QueueDto.QueueResponse result = new QueueDto.QueueResponse(queue.getToken());
+    public ResponseEntity<QueueDto.QueueResponse> waiting() {
+        long timestamp = System.currentTimeMillis();
+        Token waitingQueueToken = queueService.waitQueue(timestamp);
+        QueueDto.QueueResponse result = new QueueDto.QueueResponse(waitingQueueToken.getValue());
         return ResponseEntity.ok(result);
     }
 
@@ -36,9 +34,9 @@ public class QueueController {
     public ResponseEntity<QueueDto.QueueStatusResponse> status(
             @RequestHeader("Queue-Token") String token
     ) {
-        QueueInfo info = queueService.getQueueInfo(token);
+        QueueTokenInfo info = queueService.getQueueTokenInfo(token);
         QueueDto.QueueStatusResponse result =
-                new QueueDto.QueueStatusResponse(token, info.getStatus(), info.getWaitingPosition(), info.getExpectedWaitTimeSeconds());
+                new QueueDto.QueueStatusResponse(token, info.getStatus(), info.getWaitingNumber(), info.getExpectedWaitingTimeSeconds());
         return ResponseEntity.ok(result);
     }
 }
