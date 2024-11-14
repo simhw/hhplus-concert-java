@@ -36,6 +36,16 @@ public class ReservationService {
     }
 
     /**
+     * 좌석 예약
+     */
+    @Transactional
+    public Reservation completeReservation(Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+        reservation.complete();
+        return reservation;
+    }
+
+    /**
      * 일정 시간까지 결제되지 않은 좌석은 예약 가능한 상태로 변경한다.
      */
     @Transactional

@@ -47,37 +47,36 @@ class PaymentFacadeTest {
     @Autowired
     ReservationJpaRepository reservationJpaRepository;
 
-    User user;
-    Seat seat1;
-    Seat seat2;
-    Seat seat3;
-    ConcertPerformance performance;
-    Concert concert;
+    User USER;
+    Account ACCOUNT;
+    Concert CONCERT;
+    ConcertPerformance PERFORMANCE;
+    Seat SEAT1, SEAT2;
 
     @BeforeEach
     void init() {
-        user = new User("username", "email");
-        userJpaRepository.save(user);
-        accountJpaRepository.save(new Account(150000L, user));
+        USER = new User("username", "email");
+        userJpaRepository.save(USER);
 
-        seat1 = new Seat("BASIC", 1, 100000, SeatStatus.AVAILABLE);
-        seat2 = new Seat("VIP", 2, 150000, SeatStatus.RESERVED);
-        seat3 = new Seat("VIP", 3, 250000, SeatStatus.RESERVED);
+        ACCOUNT = new Account(100000L, USER);
+        accountJpaRepository.save(ACCOUNT);
 
-        performance = new ConcertPerformance(LocalDate.now(), LocalDateTime.now().plusMinutes(100), LocalDateTime.now().plusMinutes(250), List.of(seat1, seat2));
-        concert = new Concert("concert", List.of(performance));
-        concertJpaRepository.save(concert);
+        SEAT1 = new Seat("BASIC", 1, 100000, SeatStatus.AVAILABLE);
+        SEAT2 = new Seat("VIP", 2, 150000, SeatStatus.RESERVED);
+        PERFORMANCE = new ConcertPerformance(LocalDate.now(), LocalDateTime.now().plusMinutes(30), LocalDateTime.now().plusMinutes(250), List.of(SEAT1, SEAT2));
+        CONCERT = new Concert("concert", List.of(PERFORMANCE));
+        concertJpaRepository.save(CONCERT);
     }
 
     @DisplayName("예약건이 존재하는 경우 해당 예약에 대한 결제가 가능하다.")
     @Test
     void 예약_결제() {
         // given
-        Reservation reservation = new Reservation(ReservationStatus.PAYMENT_WAITING, seat2.getPrice(), user, seat2);
+        Reservation reservation = new Reservation(ReservationStatus.PAYMENT_WAITING, SEAT1.getPrice(), USER, SEAT1);
         reservationJpaRepository.save(reservation);
 
         // when
-        PaymentInfo payment = paymentFacade.pay(user.getId(), reservation.getId());
+        PaymentInfo payment = paymentFacade.pay(USER.getId(), reservation.getId());
         assertThat(payment).isNotNull();
     }
 
@@ -85,12 +84,12 @@ class PaymentFacadeTest {
     @Test
     void 잔액_부족_예약_결제() {
         // given
-        Reservation reservation = new Reservation(ReservationStatus.PAYMENT_WAITING, seat3.getPrice(), user, seat2);
+        Reservation reservation = new Reservation(ReservationStatus.PAYMENT_WAITING, SEAT2.getPrice(), USER, SEAT2);
         reservationJpaRepository.save(reservation);
 
         // when, then
         CoreException exception = Assertions.assertThrows(CoreException.class,
-                () -> paymentFacade.pay(user.getId(), reservation.getId()));
+                () -> paymentFacade.pay(USER.getId(), reservation.getId()));
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_ENOUGH_ACCOUNT_AMOUNT);
     }
 }
