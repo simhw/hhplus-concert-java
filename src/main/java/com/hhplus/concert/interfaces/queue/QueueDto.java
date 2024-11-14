@@ -8,11 +8,6 @@ import lombok.Data;
 @Builder
 public class QueueDto {
     @Data
-    public static class QueueRequest {
-        private String userId;
-    }
-
-    @Data
     @AllArgsConstructor
     public static class QueueResponse {
         private String token;
@@ -22,9 +17,9 @@ public class QueueDto {
     @AllArgsConstructor
     @Builder
     public static class QueueStatusResponse {
-        private String code;
+        private String token;
         private String status;
         private Long waitingNumber;
-        private Long waitingExpectedWaiting;
+        private Long expectedWaitingTimeSeconds;
     }
 }

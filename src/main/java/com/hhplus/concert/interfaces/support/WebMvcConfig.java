@@ -30,7 +30,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(verifyQueueInterceptor)
                 .order(1)
                 .addPathPatterns(
-                        "/api/queue/status",
                         "/api/concerts",
                         "/api/concerts/*",
                         "/api/reservations",
