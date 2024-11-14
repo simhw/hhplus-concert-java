@@ -19,7 +19,7 @@ import static jakarta.persistence.GenerationType.*;
 @Table(name = "seat")
 public class Seat {
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "seat_id")
     private Long id;
 

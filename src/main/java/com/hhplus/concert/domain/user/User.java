@@ -16,7 +16,7 @@ import static jakarta.persistence.GenerationType.*;
 @AllArgsConstructor
 public class User {
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "user_id")
     private Long id;
 

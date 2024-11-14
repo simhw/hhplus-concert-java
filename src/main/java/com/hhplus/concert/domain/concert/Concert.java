@@ -21,7 +21,7 @@ import static jakarta.persistence.GenerationType.*;
 @AllArgsConstructor
 public class Concert extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "concert_id")
     private Long id;
 

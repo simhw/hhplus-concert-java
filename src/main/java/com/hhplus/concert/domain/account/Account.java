@@ -7,14 +7,14 @@ import com.hhplus.concert.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import static jakarta.persistence.GenerationType.AUTO;
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Entity
 @Table(name = "account")
 public class Account extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "account_id")
     private Long id;
 

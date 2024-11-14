@@ -19,7 +19,7 @@ import static jakarta.persistence.GenerationType.*;
 @AllArgsConstructor
 public class Reservation extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "reservation_id")
     private Long id;
 

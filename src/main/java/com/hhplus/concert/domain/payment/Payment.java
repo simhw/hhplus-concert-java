@@ -13,7 +13,7 @@ import static jakarta.persistence.GenerationType.*;
 @Table(name = "payment")
 public class Payment extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "payment_id")
     private Long id;
 
