@@ -23,7 +23,7 @@ public class ReservationController {
     public ResponseEntity<ReservationDto.ReservationResponse> reserve(
             @RequestBody ReservationDto.ReservationRequest request
     ) {
-        ReservationInfo info = reservationFacade.placeReservation(ReservationCommand.toReservationCommand(request));
+        ReservationInfo info = reservationFacade.placeReservation(ReservationCommand.of(request));
         ReservationDto.ReservationResponse result = ReservationDto.ReservationResponse.builder()
                 .id(info.getId())
                 .status(info.getStatus())

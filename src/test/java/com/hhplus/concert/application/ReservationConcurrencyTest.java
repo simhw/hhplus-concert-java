@@ -4,18 +4,15 @@ import com.hhplus.concert.domain.concert.Concert;
 import com.hhplus.concert.domain.concert.ConcertPerformance;
 import com.hhplus.concert.domain.concert.Seat;
 import com.hhplus.concert.domain.concert.SeatStatus;
-import com.hhplus.concert.domain.reservation.ReservationCommand;
-import com.hhplus.concert.domain.reservation.ReservationInfo;
+import com.hhplus.concert.domain.reservation.*;
 import com.hhplus.concert.domain.user.User;
 import com.hhplus.concert.infra.concert.ConcertJpaRepository;
 import com.hhplus.concert.infra.user.UserJpaRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.util.StopWatch;
 
 import java.time.LocalDate;
@@ -26,6 +23,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 class ReservationConcurrencyTest {
@@ -38,6 +37,9 @@ class ReservationConcurrencyTest {
 
     @Autowired
     ConcertJpaRepository concertJpaRepository;
+
+    @Autowired
+    ReservationRepository reservationRepository;
 
     List<User> USERS;
     Concert CONCERT;
@@ -62,7 +64,6 @@ class ReservationConcurrencyTest {
         concertJpaRepository.save(CONCERT);
     }
 
-    @Rollback(false)
     @DisplayName("동시에 서로 다른 유저 250명이 좌석 예약 시 1명만 성공한다.")
     @Test
     void 좌석_예약() throws InterruptedException {
@@ -105,6 +106,11 @@ class ReservationConcurrencyTest {
         System.out.println("소요시간: " + stopWatch.getTotalTimeMillis() + "ms");
         System.out.println(stopWatch.prettyPrint());
 
-        Assertions.assertThat(success.get()).isEqualTo(1);
+        List<Reservation> reservations = reservationRepository.getReservations(ReservationStatus.PAYMENT_WAITING);
+        Seat seat = concertJpaRepository.findSeat(SEAT.getId()).orElse(null);
+
+        assertThat(reservations).hasSize(1);
+        assertThat(seat.getStatus()).isEqualTo(SeatStatus.RESERVED);
+        assertThat(success.get()).isEqualTo(1);
     }
 }

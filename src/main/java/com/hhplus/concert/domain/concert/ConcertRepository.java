@@ -9,5 +9,7 @@ public interface ConcertRepository {
 
     ConcertPerformance getPerformance(Long concertId, Long performanceId);
 
+    Seat getSeat(Long seatId);
+
     Seat getSeatForUpdate(Long seatId);
 }

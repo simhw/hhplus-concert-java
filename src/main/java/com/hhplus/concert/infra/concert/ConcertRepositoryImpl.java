@@ -33,6 +33,11 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     }
 
     @Override
+    public Seat getSeat(Long seatId) {
+        return concertJpaRepository.findSeat(seatId).orElse(null);
+    }
+
+    @Override
     public Seat getSeatForUpdate(Long seatId) {
         return concertJpaRepository.findSeatForUpdate(seatId).orElse(null);
     }
