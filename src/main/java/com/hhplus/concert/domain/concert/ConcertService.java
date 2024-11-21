@@ -9,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.springframework.transaction.annotation.Propagation.*;
-
 @Service
 @RequiredArgsConstructor
 public class ConcertService {
@@ -98,7 +96,7 @@ public class ConcertService {
     /**
      * 좌석 점유 상태 변경
      * */
-    @Transactional(propagation = REQUIRES_NEW)
+    @Transactional
     public Seat occupySeat(Long seatId) {
         Seat seat = concertRepository.getSeat(seatId);
         seat.occupy();
