@@ -3,6 +3,8 @@ package com.hhplus.concert.domain.reservation;
 import com.hhplus.concert.domain.BaseTimeEntity;
 
 import com.hhplus.concert.domain.concert.Seat;
+import com.hhplus.concert.domain.support.error.CoreException;
+import com.hhplus.concert.domain.support.error.ErrorType;
 import com.hhplus.concert.domain.user.User;
 import jakarta.persistence.*;
 import jdk.jfr.Description;
@@ -19,7 +21,7 @@ import static jakarta.persistence.GenerationType.*;
 @AllArgsConstructor
 public class Reservation extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "reservation_id")
     private Long id;
 
@@ -58,6 +60,13 @@ public class Reservation extends BaseTimeEntity {
 
     public void complete() {
         this.status = ReservationStatus.PAYMENT_COMPLETED;
+    }
+
+    public void fail() {
+        if (this.status.equals(ReservationStatus.PAYMENT_COMPLETED)) {
+            throw new CoreException(ErrorType.RESERVATION_ALREADY_PAID, this.id);
+        }
+        this.status = ReservationStatus.FAIL;
     }
 }
 

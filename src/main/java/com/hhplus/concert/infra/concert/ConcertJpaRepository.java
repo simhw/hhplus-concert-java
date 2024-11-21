@@ -24,4 +24,7 @@ public interface ConcertJpaRepository extends CrudRepository<Concert, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT s FROM Seat s WHERE s.id = :seatId")
     Optional<Seat> findSeatForUpdate(@Param("seatId") Long seatId);
+
+    @Query("SELECT s FROM Seat s WHERE s.id = :seatId")
+    Optional<Seat> findSeat(Long seatId);
 }

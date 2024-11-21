@@ -10,7 +10,7 @@ public class ReservationCommand {
     private Long performanceId;
     private Long seatId;
 
-    public static ReservationCommand toReservationCommand(ReservationDto.ReservationRequest request) {
+    public static ReservationCommand of(ReservationDto.ReservationRequest request) {
         ReservationCommand command = new ReservationCommand();
         command.setUserId(request.getUserId());
         command.setConcertId(request.getConcertId());

@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.springframework.transaction.annotation.Propagation.*;
+
 @Service
 @RequiredArgsConstructor
 public class ConcertService {
@@ -16,13 +18,37 @@ public class ConcertService {
     private final ConcertRepository concertRepository;
 
     /**
-     * 콘서트 목록 조회
+     * 유효한 콘서트 목록 조회
      */
     @Transactional(readOnly = true)
     public List<ConcertInfo> getConcertInfos() {
         List<Concert> concerts = concertRepository.getConcerts();
         return concerts.stream()
                 .map(ConcertInfo::toConcertInfo)
+                .toList();
+    }
+
+    /**
+     * 예약 가능한 공연 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<ConcertPerformanceInfo> getAvailablePerformanceInfos(Long concertId) {
+        Concert concert = getConcert(concertId);
+        LocalDateTime now = LocalDateTime.now();
+        return concert.getPerformances().stream()
+                .filter(v -> v.isNotExpired(now))
+                .map(ConcertPerformanceInfo::toConcertPerformanceInfo)
+                .toList();
+    }
+
+    /**
+     * 좌석 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<SeatInfo> getSeatInfos(Long concertId, Long performanceId) {
+        ConcertPerformance performance = getAvailablePerformance(concertId, performanceId);
+        return performance.getSeats().stream()
+                .map(SeatInfo::toSeatInfo)
                 .toList();
     }
 
@@ -37,19 +63,6 @@ public class ConcertService {
         }
         concert.verifyIsAvailable();
         return concert;
-    }
-
-    /**
-     * 예약 가능한 공연 목록 조회
-     */
-    @Transactional(readOnly = true)
-    public List<ConcertPerformanceInfo> getAvailablePerformanceInfos(Long concertId) {
-        Concert concert = getConcert(concertId);
-        LocalDateTime now = LocalDateTime.now();
-        return concert.getPerformances().stream()
-                .filter(v -> v.isNotExpired(now))
-                .map(ConcertPerformanceInfo::toConcertPerformanceInfo)
-                .toList();
     }
 
     /**
@@ -68,27 +81,26 @@ public class ConcertService {
     }
 
     /**
-     * 좌석 목록 조회
-     */
-    @Transactional(readOnly = true)
-    public List<SeatInfo> getSeatInfos(Long concertId, Long performanceId) {
-        ConcertPerformance performance = getAvailablePerformance(concertId, performanceId);
-        return performance.getSeats().stream()
-                .map(SeatInfo::toSeatInfo)
-                .toList();
-    }
-
-    /**
      * 예약 가능한 좌석 조회
      * 유효한 콘서트, 예약 가능한 공연, 좌석을 조회한 후 좌석의 상태를 'RESERVED'로 변경합니다.
      */
-    @Transactional
-    public Seat occupySeat(Long concertId, Long performanceId, Long seatId) {
+    @Transactional(readOnly = true)
+    public Seat getAvailableSeat(Long concertId, Long performanceId, Long seatId) {
         ConcertPerformance performance = getAvailablePerformance(concertId, performanceId);
         Seat seat = performance.getSeats().stream()
                 .filter(v -> v.getId().equals(seatId))
                 .findFirst()
                 .orElseThrow(() -> new CoreException(ErrorType.SEAT_NOT_FOUND, seatId));
+        seat.verifyIsAvailable();
+        return seat;
+    }
+
+    /**
+     * 좌석 점유 상태 변경
+     * */
+    @Transactional(propagation = REQUIRES_NEW)
+    public Seat occupySeat(Long seatId) {
+        Seat seat = concertRepository.getSeat(seatId);
         seat.occupy();
         return seat;
     }

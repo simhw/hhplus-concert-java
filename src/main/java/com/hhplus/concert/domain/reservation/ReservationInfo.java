@@ -8,7 +8,7 @@ public class ReservationInfo {
     private String status;
     private Integer amount;
 
-    public static ReservationInfo toReservationInfo(Reservation reservation) {
+    public static ReservationInfo from(Reservation reservation) {
         ReservationInfo info = new ReservationInfo();
         info.setId(reservation.getId());
         info.setStatus(reservation.getStatus().toString());

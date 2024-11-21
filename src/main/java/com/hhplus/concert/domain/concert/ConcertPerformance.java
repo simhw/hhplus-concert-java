@@ -26,7 +26,7 @@ import static jakarta.persistence.GenerationType.*;
 public class ConcertPerformance extends BaseTimeEntity {
     @Id
     @Column(name = "concert_performance_id")
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Description("공연일")
