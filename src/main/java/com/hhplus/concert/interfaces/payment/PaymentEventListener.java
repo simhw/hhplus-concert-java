@@ -1,5 +1,6 @@
 package com.hhplus.concert.interfaces.payment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hhplus.concert.application.event.PaymentEvent;
 import com.hhplus.concert.domain.outbox.Outbox;
@@ -30,12 +31,12 @@ public class PaymentEventListener {
      */
     @Async
     @TransactionalEventListener(phase = BEFORE_COMMIT)
-    public void writeOutbox(PaymentEvent.Completed event) {
+    public void writeOutbox(PaymentEvent.Completed event) throws JsonProcessingException {
         Outbox outbox = outboxService.writeOutbox(
                 Payment.class.toString(),
                 event.getPaymentId(),
                 PaymentEvent.class.toString(),
-                event.toString()
+                objectMapper.writeValueAsString(event)
         );
     }
 
@@ -52,5 +53,4 @@ public class PaymentEventListener {
             log.error("fail to serialize event", e);
         }
     }
-
 }
