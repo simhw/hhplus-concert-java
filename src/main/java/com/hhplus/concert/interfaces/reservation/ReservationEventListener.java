@@ -1,6 +1,6 @@
 package com.hhplus.concert.interfaces.reservation;
 
-import com.hhplus.concert.application.event.ReservedEvent;
+import com.hhplus.concert.domain.reservation.ReservedEvent;
 import com.hhplus.concert.domain.concert.ConcertService;
 import com.hhplus.concert.domain.reservation.ReservationService;
 import lombok.AllArgsConstructor;

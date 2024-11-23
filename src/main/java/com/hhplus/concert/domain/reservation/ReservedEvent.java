@@ -1,4 +1,4 @@
-package com.hhplus.concert.application.event;
+package com.hhplus.concert.domain.reservation;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -20,7 +20,7 @@ public class OutboxService {
     }
 
     @Transactional
-    public boolean publishedOutbox(Long publisherId) {
+    public boolean changeOutboxStatus(Long publisherId) {
         outboxRepository.getQutbox(publisherId).published();
         return true;
     }

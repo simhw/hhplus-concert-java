@@ -1,6 +1,6 @@
 package com.hhplus.concert.application;
 
-import com.hhplus.concert.application.event.ReservedEvent;
+import com.hhplus.concert.domain.reservation.ReservedEvent;
 import com.hhplus.concert.domain.concert.ConcertService;
 import com.hhplus.concert.domain.concert.Seat;
 import com.hhplus.concert.domain.reservation.Reservation;

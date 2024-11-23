@@ -1,4 +1,4 @@
-package com.hhplus.concert.application.event;
+package com.hhplus.concert.domain.payment;
 
 import lombok.Getter;
 

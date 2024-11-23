@@ -1,6 +1,6 @@
 package com.hhplus.concert.application;
 
-import com.hhplus.concert.application.event.PaymentEvent;
+import com.hhplus.concert.domain.payment.PaymentEvent;
 import com.hhplus.concert.domain.account.AccountService;
 import com.hhplus.concert.domain.payment.PaymentInfo;
 import com.hhplus.concert.domain.payment.PaymentService;
@@ -42,8 +42,12 @@ public class PaymentFacade {
         // 4. 결제 내역을 생성한다.
         PaymentInfo info = paymentService.pay(reservation);
 
-        // 5. 결제 완료 이벤트 발행
-        eventPublisher.publishEvent(new PaymentEvent.Completed(info.getId(), reservation.getId()));
+        // 5. 결제 완료 이벤트를 발행한다.
+        PaymentEvent.Completed event = new PaymentEvent.Completed(
+                info.getId(),
+                reservation.getId()
+        );
+        eventPublisher.publishEvent(event);
         return info;
     }
 }
