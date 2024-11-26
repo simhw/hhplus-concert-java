@@ -2,7 +2,7 @@ package com.hhplus.concert.interfaces.payment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hhplus.concert.domain.payment.PaymentEvent;
+import com.hhplus.concert.domain.payment.event.PaymentEvent;
 import com.hhplus.concert.domain.outbox.OutboxService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,6 @@ public class PaymentConsumer {
      */
     @KafkaListener(topics = TOPIC_NAME, groupId = "concert-group2")
     public void consume(String message) {
-        log.info("PaymentConsumer.consume");
         log.info("message = {}", message);
     }
 }

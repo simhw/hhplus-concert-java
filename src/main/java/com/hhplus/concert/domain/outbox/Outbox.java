@@ -14,7 +14,7 @@ public class Outbox extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "outbox_id")
-    private Long id;
+    private Long id; 
 
     @Description("발신자, 도메인")
     private String publisher;
@@ -30,7 +30,7 @@ public class Outbox extends BaseTimeEntity {
 
     @Lob
     @Description("이벤트 내용")
-    private String message; // {"id": id, "reservation_id" 1 .. }
+    private String message;
 
     @Description("발신 완료 여부")
     private boolean isPublished;

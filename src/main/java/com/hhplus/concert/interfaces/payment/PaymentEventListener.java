@@ -2,10 +2,10 @@ package com.hhplus.concert.interfaces.payment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hhplus.concert.domain.payment.PaymentEvent;
+import com.hhplus.concert.domain.payment.event.PaymentEvent;
 import com.hhplus.concert.domain.outbox.OutboxService;
 import com.hhplus.concert.domain.payment.Payment;
-import com.hhplus.concert.domain.payment.PaymentEventPublisher;
+import com.hhplus.concert.domain.payment.event.PaymentEventPublisher;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -30,9 +30,9 @@ public class PaymentEventListener {
     @TransactionalEventListener(phase = BEFORE_COMMIT)
     public void writeOutbox(PaymentEvent.Completed event) throws JsonProcessingException {
         outboxService.writeOutbox(
-                Payment.class.toString(),
+                Payment.class.getSimpleName(),
                 event.getPaymentId(),
-                PaymentEvent.class.toString(),
+                PaymentEvent.class.getSimpleName(),
                 objectMapper.writeValueAsString(event)
         );
     }

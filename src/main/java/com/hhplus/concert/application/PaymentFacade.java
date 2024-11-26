@@ -1,6 +1,5 @@
 package com.hhplus.concert.application;
 
-import com.hhplus.concert.domain.payment.PaymentEvent;
 import com.hhplus.concert.domain.account.AccountService;
 import com.hhplus.concert.domain.payment.PaymentInfo;
 import com.hhplus.concert.domain.payment.PaymentService;
@@ -9,7 +8,6 @@ import com.hhplus.concert.domain.reservation.ReservationService;
 import com.hhplus.concert.domain.user.User;
 import com.hhplus.concert.domain.user.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +19,6 @@ public class PaymentFacade {
     private final AccountService accountService;
     private final ReservationService reservationService;
     private final PaymentService paymentService;
-    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 콘서트 예약 결제
@@ -40,14 +37,6 @@ public class PaymentFacade {
         accountService.use(user, reservation.getAmount());
 
         // 4. 결제 내역을 생성한다.
-        PaymentInfo info = paymentService.pay(reservation);
-
-        // 5. 결제 완료 이벤트를 발행한다.
-        PaymentEvent.Completed event = new PaymentEvent.Completed(
-                info.getId(),
-                reservation.getId()
-        );
-        eventPublisher.publishEvent(event);
-        return info;
+        return paymentService.pay(reservation);
     }
 }

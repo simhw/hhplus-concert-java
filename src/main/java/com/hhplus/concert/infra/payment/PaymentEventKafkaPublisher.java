@@ -2,8 +2,8 @@ package com.hhplus.concert.infra.payment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hhplus.concert.domain.payment.PaymentEvent;
-import com.hhplus.concert.domain.payment.PaymentEventPublisher;
+import com.hhplus.concert.domain.payment.event.PaymentEvent;
+import com.hhplus.concert.domain.payment.event.PaymentEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
