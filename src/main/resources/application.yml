@@ -1,19 +1,22 @@
 spring:
   application:
     name: concert-system
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/concert
     username: hhplus
     password: 1111
+
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: ture
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
+
   kafka:
     bootstrap-servers: localhost:29092
     consumer:
@@ -25,11 +28,18 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
+## monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
-    org.apache.kafka.clients.consumer: DEBUG
+#    org.apache.kafka.clients.consumer: DEBUG
 
 springdoc:
   swagger-ui:

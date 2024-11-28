@@ -32,7 +32,7 @@ public class VerifyQueueInterceptor implements HandlerInterceptor {
         String token = request.getHeader(QUEUE_TOKEN_HEADER);
 
         try {
-            Token activeQueueToken = activeQueueRepository.getActiveQueueToken(new Token("ACTIVE", token));
+            Token activeQueueToken = activeQueueRepository.getActiveQueueToken(new Token(token, "ACTIVE"));
             if (activeQueueToken == null) {
                 throw new CoreException(ErrorType.QUEUE_NOT_FOUND, token);
             }
